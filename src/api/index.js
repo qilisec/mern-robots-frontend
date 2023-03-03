@@ -1,8 +1,15 @@
 import axios from 'axios';
 
+const ip =
+  process.env.HOST === 'local'
+    ? 'localhost'
+    : process.env.REACT_APP_WEB_APP_DB_PUBLIC_IP;
+
+console.log(`Host is '${process.env.REACT_APP_HOST}', IP set to ${ip}`);
+
 const api = axios.create({
-  // baseURL: 'https://localhost:3000/api',
-  baseURL: 'http://localhost:3000/api',
+  // baseURL: `http://${ip}:3000/api`,
+  baseURL: `https://${ip}:3000/api`,
   headers: { 'X-Custom-Header': 'mern-Robots' },
 });
 

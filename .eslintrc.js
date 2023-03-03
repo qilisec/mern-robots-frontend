@@ -4,6 +4,7 @@ module.exports = {
     es6: true,
     browser: true,
   },
+  plugins: ['only-warn'],
   overrides: [
     {
       files: ['*.js', '*.ts'],
