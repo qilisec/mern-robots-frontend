@@ -1,40 +1,52 @@
-/* eslint-disable import/no-relative-packages */
-import React, { useState, useEffect, useContext } from 'react';
-import { Routes, Route, Link, NavLink } from 'react-router-dom';
-// Do not remove tachyons. Even though it is never explicitly read
+/* eslint-disable import/no-relative-packages, no-unused-vars */
+import React, { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+// Do not remove tachyons. Even though it is never explicitly read, I think it is still needed.
 import tachyons from 'tachyons';
-import { array } from 'prop-types';
+// import { array } from 'prop-types';
 import RobotHome from './RobotHome';
 import About from '../components/About.js';
 import RobotInfo from '../components/RobotInfo.js';
 import { AuthProvider } from '../components/auth';
+import NavBar from '../components/NavBar';
 import { Login } from '../components/Login';
+import { Profile } from '../components/Profile';
 import GetRobotList from '../components/GetRobotList.js';
 
 import { createRobot, getRobotById, getAllRobots } from '../api/index.js';
+import { getRefreshToken } from '../api/privateApi';
+import User1Signin from '../components/User1Signin';
+import User2Signin from '../components/User2Signin';
 
 function App() {
-  const auth = useContext(AuthProvider);
   const [searchfield, setSearchfield] = useState('');
   const [count, setCount] = useState(5);
   const [robots, setRobots] = useState([]);
   const [source, setSource] = useState('');
-
+  // console.log(`Render`);
   useEffect(() => {
+    // console.log(
+    //   `1st use effect started. robots.length is ${robots.length}, source is ${source}`
+    // );
     const initialGetRobots = async () => {
       try {
         const dbCheck = await checkDb();
-        const [currSource, data] = dbCheck;
-        if (currSource && currSource === 'fetch') {
-          console.log(`No robots found in database. Fetching:`);
+        const [currSource, returnData] = dbCheck;
+
+        if (!returnData && currSource === 'fetch') {
+          // console.log(`No robots found in database. Fetching:`);
+          // console.log(`initialGetRobots: getRobotsFromFetch invoked from try`);
           getRobotsFromFetch();
-        } else if (currSource && currSource === 'db') {
-          console.log(`Robots read from database`);
-          const dbRobotData = [...data];
+        } else if (returnData && currSource === 'db') {
+          // console.log(`Robots read from database`);
+          const dbRobotData = [...returnData];
           setRobots(dbRobotData);
           return robots;
         }
-      } catch (error) {
+      } catch (err) {
+        // console.log(
+        //   `initialGetRobots: getRobotsFromFetch invoked from catch;\nError: ${err}`
+        // );
         getRobotsFromFetch();
       }
     };
@@ -43,88 +55,173 @@ function App() {
       try {
         const robotsExist = await getAllRobots();
         const { data } = robotsExist.data;
+
         if (data.length > 0) {
           setSource('db');
           const currSource = source;
-          return [currSource, data];
+          const returnData = data;
+          return [currSource, returnData];
         }
-        if (data.length === 0) {
-          const currSource = source;
-          setSource('fetch');
-          return [currSource, null];
-        }
+        // We don't need to write code for the length === 0 case because getAllRobots (i.e. function that generates "data") already has a clause that deals with length === 0. getAllRobots will throw a error, which we need to catch.
+        // if (data.length === 0) {
+        //   setSource('fetch');
+        //   const currSource = source;
+        //   const returnData = null;
+        //   return [currSource, returnData];
+        // }
       } catch (error) {
         setSource('fetch');
         const currSource = source;
-        console.log(
-          `checkEmptyDb error: ${error}. Setting source to ${currSource}`
-        );
+        console.log(`checkDb error: ${error}`);
+        console.log(`Setting source to ${currSource}`);
         return [currSource, null];
       }
     };
 
-    const getRobotsFromFetch = () => {
+    const getRobotsFromFetch = async () => {
       fetch('https://dummyjson.com/users?limit=100')
         .then((response) => response.json())
         .then((content) => {
           const { users } = content;
           const unformattedRobots = [...users];
-          const formattedRobots = [];
-          unformattedRobots.forEach((robot) => {
-            const { id } = robot;
-            robot.robotId = id;
-            delete robot.id;
-            formattedRobots.push(robot);
-          });
-          if (formattedRobots.length === unformattedRobots.length)
+
+          const formattedRobots = formatFetchedRobots(unformattedRobots);
+
+          if (formattedRobots.length === unformattedRobots.length) {
+            console.log(
+              `getRobotsFromFetch: unformattedLength = ${unformattedRobots.length};\nformatted length = ${formattedRobots.length}`
+            );
             return setRobots(formattedRobots);
+          }
         });
+
+      const formatFetchedRobots = (unformattedRobots) => {
+        const formattedRobots = [];
+        unformattedRobots.forEach((robot) => {
+          // changing "id" key to "robotid" to allow for new mongodb id
+          const { id } = robot;
+
+          // console.log(`fetching robotId: ${id}`);
+          robot.robotId = id;
+          delete robot.id;
+          robot.userRole = 'public';
+          // console.log(`Added robot.user ${robot.userRole}`);
+          formattedRobots.push(robot);
+        });
+        return formattedRobots;
+      };
     };
 
     initialGetRobots();
-  }, [source !== '']);
+    // return
+    // console.log(
+    //   `1st use effect ended. robots.length is ${robots.length}, source is ${source}`
+    // );
+  }, [source === '']);
+  // }, [source === '', robots.length === 0]);
+  // }, [source !== '', robots.length === 0]);
 
+  // Upon fetching, add robots to DB
   useEffect(() => {
-    const addRobotsToDb = async (inputRobot) => {
+    // console.log(
+    //   `2nd use effect started. robots.length is ${robots.length}, source is ${source}`
+    // );
+
+    const addRobotToDb = async (inputRobot) => {
       try {
-        const robotDbCheck = await getRobotById(inputRobot._id);
-        try {
-          console.log(`Robot found in DB: ${robotDbCheck}`);
-          return robotDbCheck;
-        } catch (err) {
-          console.log(
-            `robotDbCheck Error: ${err}, input.robotId: ${inputRobot.robotId}, _id: ${inputRobot.id}`
-          );
+        // Note that fetched robots don't have _ids since those are added by MongoDB
+        const robotDbCheck = inputRobot._id
+          ? await getRobotById(inputRobot._id)
+          : null;
+        // console.log(`robotDbCheck is ${robotDbCheck}`);
+        if (robotDbCheck) {
+          // console.log(`Robot found in DB: ${robotDbCheck}`);
+          return true;
         }
+        return false;
       } catch (err) {
-        console.log(`
-        addRobotsToDb error: ${err}
-        Robot with id: ${inputRobot.robotId} not found in db.`);
-        const newRobot = createRobot(inputRobot);
-        return newRobot;
+        console.log(
+          `addRobotsToDb: Couldn't get robot from db or create new robot. Error: ${err}`
+        );
       }
     };
 
     if (robots.length !== 0 && source === 'fetch') {
       const fetchedRobots = [...robots];
+      const checkedRobots = [];
       fetchedRobots.forEach((robot) => {
-        const newRobot = addRobotsToDb(robot);
+        const isNewRobot = addRobotToDb(robot);
+        if (!isNewRobot) checkedRobots.push(robot);
       });
+      console.log(
+        `addRobotToDb: ${checkedRobots.length} fetched robots already in db`
+      );
     }
-  }, [robots, source]);
+    // return console.log(
+    //   `2nd use effect ended. robots.length is ${robots.length}, source is ${source}`
+    // );
+  }, [robots.length > 0]);
+
+  // useEffect(() => {
+  //   const addRobotsToDb = async (inputRobot) => {
+  //     try {
+  //       const robotDbCheck = await getRobotById(inputRobot._id);
+  //       try {
+  //         if (robotDbCheck) {
+  //           console.log(`Robot found in DB: ${robotDbCheck}`);
+  //           return robotDbCheck;
+  //         }
+  //         // console.log(`Robot with id: ${inputRobot.robotId} not found in db.`);
+  //         const newRobot = createRobot(inputRobot);
+
+  //         return newRobot;
+  //       } catch (err) {
+  //         console.log(
+  //           `robotDbCheck Error: ${err}, input.robotId: ${inputRobot.robotId}, _id: ${inputRobot.id}`
+  //         );
+  //       }
+  //     } catch (err) {
+  //       console.log(
+  //         `addRobotsToDb: Couldn't get robot from db or create new robot. Error: ${err}`
+  //       );
+  //       // const newRobot = createRobot(inputRobot);
+  //       // return newRobot;
+  //     }
+  //   };
+
+  //   if (robots.length !== 0 && source === 'fetch') {
+  //     const fetchedRobots = [...robots];
+  //     fetchedRobots.forEach((robot) => {
+  //       const newRobot = addRobotsToDb(robot);
+  //     });
+  //   }
+  // }, [robots, source]);
+
+  // useEffect(() => {
+  //   const getUser = auth && auth.user ? auth.user : null;
+  //   if (authRef && authRef.current !== null && loginStatus === '') {
+  //     console.log(
+  //       `authRef value is ${authRef.current}; loginStatus value: ${loginStatus}`
+  //       //   `authRef value is ${Object.keys(
+  //       //     authRef
+  //       //   )}; loginStatus value: ${loginStatus}`
+  //     );
+  //     setLoginStatus(true);
+  //     console.log(`Set login status to ${loginStatus}`);
+  //     console.log(
+  //       `auth user is: ${authRef.current}, loginStatus is ${loginStatus}`
+  //     );
+  //   } else {
+  //     setLoginStatus(false);
+  //     console.log(`loginStatus value: ${loginStatus}`);
+  //   }
+  // }, [auth && auth.user, loginStatus]);
 
   return (
     <AuthProvider>
       <div className="App">
         <div>
-          <nav>
-            <span className="ma2">
-              <NavLink to="/">Home</NavLink>
-            </span>
-            <span className="mr2">
-              {!auth?.account && <NavLink to="/login">Login</NavLink>}
-            </span>
-          </nav>
+          <NavBar />
         </div>
         <Routes>
           <Route
@@ -143,7 +240,15 @@ function App() {
           <Route path="/about" exact element={<About />} />
           <Route path="/robot/:id" element={<RobotInfo robots={robots} />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile history="profile" />} />
+          <Route path="/users/:userId" element={<Profile history="users" />} />
           <Route path="/getrobotlist" element={<GetRobotList />} />
+          <Route path="/user1signin" element={<User1Signin />} />
+          <Route path="/user2signin" element={<User2Signin />} />
+          <Route
+            path="/authentication/refresh"
+            element={() => getRefreshToken()}
+          />
         </Routes>
       </div>
     </AuthProvider>
