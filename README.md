@@ -26,12 +26,11 @@ Both client and server communication are secured with SSL (self-signed).
 * Axios request and response interceptors are used to send authorization tokens for initial verification authorization as well as reissuing access tokens upon expiration. 
 
 ### Routing:
-Routing is facilitated with React-Router-DOM client side and Express routers server-side
-
+* Routing is facilitated with React-Router-DOM client side and Express routers server-side
 
 ### Miscellaneous/Developement Dependencies:
-Nodemon is utilized on the server side.
+* Nodemon is utilized on the server side.
 
-ESlint + Prettier setup: https://www.npmjs.com/package/eslint-config-wesbos (An extension of the popular AirBNB style guide)
+* ESlint + Prettier setup: https://www.npmjs.com/package/eslint-config-wesbos (An extension of the popular AirBNB style guide)
 
-Client and Server/Database are separated onto two AWS EC2 instances.
+* Client and Server/Database are separated onto two AWS EC2 instances.
