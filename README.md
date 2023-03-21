@@ -34,4 +34,4 @@ Nodemon is utilized on the server side.
 
 ESlint + Prettier setup: https://www.npmjs.com/package/eslint-config-wesbos (An extension of the popular AirBNB style guide)
 
-Client and Server + Database are separated onto two AWS EC2 instances.
+Client and Server/Database are separated onto two AWS EC2 instances.
