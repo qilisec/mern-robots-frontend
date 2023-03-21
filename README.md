@@ -8,7 +8,7 @@ This application is a full stack implementation of CRUD functionality hosted rem
 
 * The primary data generated takes the facade of "robots" in which user information is stored (e.g. name, address, birthday, place of work, etc.)
 
-* User authentication and authorization is also implemented to allow for protected routing and client-side user-specific component rendering such as user specific profile pages and filtered robot submissions
+* User authentication and JWT-based authorization are also implemented to allow for protected routing and client-side user-specific component rendering such as user specific profile pages and filtered robot submissions
 
 
 
