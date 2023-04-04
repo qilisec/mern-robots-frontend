@@ -5,13 +5,8 @@ module.exports = {
     browser: true,
   },
   plugins: ['only-warn'],
-  overrides: [
-    {
-      files: ['*.js', '*.ts'],
-      extends: ['wesbos'],
-      rules: {
-        'react/prop-types': 1,
-      },
-    },
-  ],
+  rules: {
+    'react/prop-types': 1,
+    'no-unused-vars': 0,
+  },
 };

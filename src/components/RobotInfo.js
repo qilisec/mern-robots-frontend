@@ -34,6 +34,7 @@ export default function RobotInfo({ robots }) {
         return matchingRobot;
       } catch (err) {
         console.log(`error in getRobotInfo: ${err}`);
+        return err;
       }
     };
     getRobotInfo();
