@@ -57,17 +57,6 @@ export const authenticateSignIn = async (payload, res) => {
   // No way to tell if the RT cookie was obtained. Only way to do so is to attempt to pass it to the backend
   return signinResult;
 };
-// export const authenticateSignIn = async (payload, res) => {
-//   const signinResult = await api.post(`/authentication/signin`, payload, {
-//     withCredentials: true,
-//     secure: true,
-//     headers: { singleHeader: 'Hello1' },
-//   });
-//   console.log(
-//     `authenticateSignIn Frontend 1: headers are ${res?.headers}, authentication header is ${res?.headers.authentication},`
-//   );
-//   return signinResult;
-// };
 
 export const authenticateSignUp = (payload) =>
   api.post(`/authentication/signup`, payload, {
@@ -83,6 +72,7 @@ export const authenticateSignUp = (payload) =>
 export const testUser = (payload) => api.get(`/test/user`, payload);
 
 const apis = {
+  api,
   createRobot,
   getAllRobots,
   updateRobotById,

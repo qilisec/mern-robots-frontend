@@ -7,3 +7,4 @@ lessons.txt
 *.work.*
 *.working.*
 *.staging.*
+.orig

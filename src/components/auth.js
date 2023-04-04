@@ -125,6 +125,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (currentAuthUser && currentAuthUserId && activatedInterceptors)
       setCredLoadFinished(true);
+    console.log(`📎📎📎 credLoad status: ${credLoadFinished}📎📎📎`);
   }, [currentAuthUser, currentAuthUserId, activatedInterceptors]);
 
   useEffect(() => {
@@ -138,30 +139,37 @@ export const AuthProvider = ({ children }) => {
   // Use Effect for auth recovery on page refresh
   useEffect(() => {
     const refreshAuthState = async () => {
-      if (!currentAuthUser) {
-        console.log(`Init 1️⃣: No AT: check for RT!`);
-        const refreshToken = await requestRefreshToken();
+      try {
+        if (!currentAuthUser) {
+          console.log(`Init 1️⃣: No AT: check for RT!`);
+          const refreshToken = await requestRefreshToken();
 
-        if (refreshToken) {
-          console.log(`Init 2️⃣: Recovered RT, generating new AT!`);
+          if (refreshToken) {
+            console.log(`Init 2️⃣: Recovered RT, generating new AT!`);
 
-          const newAccessToken = await refreshAccessToken(refreshToken);
-          console.log(`Init 3️⃣: Generated new AT: ${newAccessToken}`);
+            const newAccessToken = await refreshAccessToken(refreshToken);
+            console.log(`Init 3️⃣: Generated new AT: ${newAccessToken}`);
 
-          const { extractedUsername, extractedUserId } = await decodeJwt(
-            newAccessToken
-          );
-          setCurrentAuthUser(newAccessToken);
-          setCurrentAuthUsername(extractedUsername);
-          setCurrentAuthUserId(extractedUserId);
+            const { extractedUsername, extractedUserId } = await decodeJwt(
+              newAccessToken
+            );
+            setCurrentAuthUser(newAccessToken);
+            setCurrentAuthUsername(extractedUsername);
+            setCurrentAuthUserId(extractedUserId);
 
-          return true;
+            // return true;
+          }
+          console.log(`🔴 Refresh token was not found`);
+          // I don't think I should return false here. It interferes with my expectation of credLoadFinished. If no RT exists, then credLoadFinished should be true even though there is no currentAuthUser. Instead, use try catch to determine whether credLoadFinished is true when there is no currAuthUser.
+          // return false;
         }
-        console.log(`🔴 Refresh token was not found`);
-        return false;
+        // console.log(`🔴 User already stored 🔴`);
+        return true;
+      } catch (err) {
+        console.log(`🔴🔴🔴 refreshAuthState Error:
+        ${err}`);
+        return err;
       }
-      // console.log(`🔴 User already stored 🔴`);
-      return true;
     };
 
     refreshAuthState();

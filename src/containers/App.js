@@ -18,6 +18,7 @@ import { getRefreshToken } from '../api/privateApi';
 import User1Signin from '../components/User1Signin';
 import User2Signin from '../components/User2Signin';
 
+const { log } = console;
 function App() {
   const [searchfield, setSearchfield] = useState('');
   const [count, setCount] = useState(5);
@@ -25,28 +26,26 @@ function App() {
   const [source, setSource] = useState('');
   // console.log(`Render`);
   useEffect(() => {
-    // console.log(
-    //   `1st use effect started. robots.length is ${robots.length}, source is ${source}`
-    // );
+    log(`UseEffect 1: robots.length: ${robots.length}, source: ${source}`);
     const initialGetRobots = async () => {
       try {
         const dbCheck = await checkDb();
         const [currSource, returnData] = dbCheck;
 
         if (!returnData && currSource === 'fetch') {
-          // console.log(`No robots found in database. Fetching:`);
+          log(`🖥🖥🖥 No robots found in database. Fetching:`);
           // console.log(`initialGetRobots: getRobotsFromFetch invoked from try`);
           getRobotsFromFetch();
         } else if (returnData && currSource === 'db') {
-          // console.log(`Robots read from database`);
+          log(`🖥🖥🖥 Robots read from database`);
           const dbRobotData = [...returnData];
           setRobots(dbRobotData);
           return robots;
         }
       } catch (err) {
-        // console.log(
-        //   `initialGetRobots: getRobotsFromFetch invoked from catch;\nError: ${err}`
-        // );
+        log(
+          `initialGetRobots: getRobotsFromFetch invoked from catch;\nError: ${err}`
+        );
         getRobotsFromFetch();
       }
     };
@@ -101,10 +100,11 @@ function App() {
           // changing "id" key to "robotid" to allow for new mongodb id
           const { id } = robot;
 
-          // console.log(`fetching robotId: ${id}`);
+          console.log(`fetching robotId: ${id}`);
           robot.robotId = id;
           delete robot.id;
           robot.userRole = 'public';
+          robot.createdBy = 'seed';
           // console.log(`Added robot.user ${robot.userRole}`);
           formattedRobots.push(robot);
         });
@@ -113,10 +113,9 @@ function App() {
     };
 
     initialGetRobots();
-    // return
-    // console.log(
-    //   `1st use effect ended. robots.length is ${robots.length}, source is ${source}`
-    // );
+    return console.log(
+      `useEffect 1 ended. robots.length: ${robots.length}, source: ${source}`
+    );
   }, [source === '']);
   // }, [source === '', robots.length === 0]);
   // }, [source !== '', robots.length === 0]);
@@ -129,6 +128,7 @@ function App() {
 
     const addRobotToDb = async (inputRobot) => {
       try {
+        // console.log(`addRobotToDb: robotDbCheck: ${robotDbCheck}`);
         // Note that fetched robots don't have _ids since those are added by MongoDB
         const robotDbCheck = inputRobot._id
           ? await getRobotById(inputRobot._id)
@@ -138,6 +138,7 @@ function App() {
           // console.log(`Robot found in DB: ${robotDbCheck}`);
           return true;
         }
+        const newRobot = createRobot(inputRobot);
         return false;
       } catch (err) {
         console.log(
@@ -161,33 +162,6 @@ function App() {
     //   `2nd use effect ended. robots.length is ${robots.length}, source is ${source}`
     // );
   }, [robots.length > 0]);
-
-  // useEffect(() => {
-  //   const addRobotsToDb = async (inputRobot) => {
-  //     try {
-  //       const robotDbCheck = await getRobotById(inputRobot._id);
-  //       try {
-  //         if (robotDbCheck) {
-  //           console.log(`Robot found in DB: ${robotDbCheck}`);
-  //           return robotDbCheck;
-  //         }
-  //         // console.log(`Robot with id: ${inputRobot.robotId} not found in db.`);
-  //         const newRobot = createRobot(inputRobot);
-
-  //         return newRobot;
-  //       } catch (err) {
-  //         console.log(
-  //           `robotDbCheck Error: ${err}, input.robotId: ${inputRobot.robotId}, _id: ${inputRobot.id}`
-  //         );
-  //       }
-  //     } catch (err) {
-  //       console.log(
-  //         `addRobotsToDb: Couldn't get robot from db or create new robot. Error: ${err}`
-  //       );
-  //       // const newRobot = createRobot(inputRobot);
-  //       // return newRobot;
-  //     }
-  //   };
 
   //   if (robots.length !== 0 && source === 'fetch') {
   //     const fetchedRobots = [...robots];

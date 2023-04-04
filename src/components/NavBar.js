@@ -1,6 +1,11 @@
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './auth';
 import { getRefreshToken, getProfilePage } from '../api/privateApi';
+import {
+  reseedUsers,
+  deleteSeedUsers,
+  deleteSeedRobots,
+} from '../api/reseedUsers';
 
 export default function NavBar() {
   const auth = useAuth();
@@ -8,10 +13,55 @@ export default function NavBar() {
   const loginStatus =
     auth && auth.currentAuthUser ? auth.currentAuthUser : null;
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log(`Navbar Logging out`);
-    auth.logout();
+    await auth.logout();
     navigate('/');
+  };
+
+  const handleReseedUsers = async () => {
+    // if (auth.credLoadFinished) {
+    // console.log(`💛💛💛 NavBar: logging out before adding new users`);
+    // handleLogout();
+    const result = await reseedUsers(auth.currentAuthUserId);
+    if (result) {
+      // console.log(`Navbar: Reseed complete`);
+      return true;
+    }
+    console.log(`Navbar: Reseed was not completed`);
+    return false;
+    // }
+    // console.log(
+    // `💟💟💟 handleResetUsers not invoked: credLoadFinished: ${auth.credLoadFinished}`
+    // );
+  };
+
+  const handleDeleteSeedUsers = async () => {
+    // if (auth.credLoadFinished) {
+    // console.log(`💛💛💛 NavBar: logging out before deleting users`);
+    // handleLogout();
+    const result = await deleteSeedUsers(auth.currentAuthUserId);
+    if (result) {
+      // console.log(`Navbar: Seed User deletion finished`);
+      return true;
+    }
+    console.log(`Navbar: Seed User deletion error`);
+    return false;
+    // }
+    // console.log(
+    // `💟💟💟 handleResetUsers not invoked: credLoadFinished: ${auth.credLoadFinished}`
+    // );
+  };
+
+  const handleDeleteSeedRobots = async () => {
+    // if (auth.credLoadFinished) {
+    const result = await deleteSeedRobots(auth.currentAuthUserId);
+    if (result) {
+      // console.log(`Navbar: Seed robot deletion finished`);
+      return true;
+    }
+    console.log(`Navbar: Seed robot deletion error:`, result);
+    return false;
   };
 
   return (
@@ -50,8 +100,23 @@ export default function NavBar() {
         </NavLink>
       </span>
       <span className="mr2">
-        <NavLink to="/" onClick={() => getRefreshToken()}>
-          Refresh AT
+        <NavLink to="/" onClick={() => handleReseedUsers()}>
+          Reseed Users
+        </NavLink>
+      </span>
+      <span className="mr2">
+        <NavLink to="/" onClick={() => handleDeleteSeedUsers()}>
+          Delete Seeded Users
+        </NavLink>
+      </span>
+      <span className="mr2">
+        <NavLink
+          to="/"
+          onClick={() => {
+            handleDeleteSeedRobots();
+          }}
+        >
+          Delete Seed Robots
         </NavLink>
       </span>
     </nav>
