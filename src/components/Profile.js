@@ -23,6 +23,16 @@ export function Profile({ history }) {
     setParamUserId(userId);
   }
 
+  const parsedRoles = () => {
+    let profileRoleString = ``;
+    if (profileRole != []) {
+      profileRoleString = profileRole.reduce(
+        (outputString, role) => `${outputString}, ${role}`
+      );
+      return profileRoleString;
+    }
+  };
+
   useEffect(() => {
     const retrieveProfileData = async (requestedUserId) => {
       try {
@@ -66,7 +76,7 @@ export function Profile({ history }) {
       <br />
       Email: {profileEmail}
       <br />
-      Role: {profileRole}
+      Role: {parsedRoles()}
       <br />
       <br />
       <button className="" type="button" onClick={() => handleLogout(auth)}>

@@ -1,8 +1,6 @@
 import { api } from '.';
 import { privateApi } from './privateApi';
 
-// const { api } = apis;
-
 export const reseedUsers = async (queryUserId) => {
   console.log(`API: reseedUsers invoked`);
   const payload = { userId: queryUserId };
@@ -38,7 +36,6 @@ export const deleteSeedUsers = async (queryUserId) => {
   return requestDelete;
 };
 
-// NavBar handleDeleteSeedRobots -> deleteSeedRobots -> verifyAccessToken -> isAdmin -> sendDeleteSeedRobots
 export const deleteSeedRobots = async (queryUserId) => {
   console.log(
     `privateAPI: deleteSeedRobots invoked; queryUserId:`,
@@ -54,17 +51,6 @@ export const deleteSeedRobots = async (queryUserId) => {
     },
   });
   return requestDelete;
-
-  // const requestDelete = privateApi
-  //   .delete('/robot', payload, {
-  //     headers: { 'current-function': 'deleteSeedRobots' },
-  //   })
-  //   .then((res) => {
-  //     console.log(`deleteSeedRobots finished: result.data:`, res.data);
-  //     return res;
-  //   })
-  //   .catch((err) => console.log(`API: deleteSeedRobots error:`, err));
-  // return requestDelete;
 };
 
 export default { reseedUsers, deleteSeedUsers, deleteSeedRobots };

@@ -20,46 +20,23 @@ export default function NavBar() {
   };
 
   const handleReseedUsers = async () => {
-    // if (auth.credLoadFinished) {
-    // console.log(`💛💛💛 NavBar: logging out before adding new users`);
-    // handleLogout();
     const result = await reseedUsers(auth.currentAuthUserId);
-    if (result) {
-      // console.log(`Navbar: Reseed complete`);
-      return true;
-    }
+    if (result) return true;
     console.log(`Navbar: Reseed was not completed`);
     return false;
-    // }
-    // console.log(
-    // `💟💟💟 handleResetUsers not invoked: credLoadFinished: ${auth.credLoadFinished}`
-    // );
   };
 
   const handleDeleteSeedUsers = async () => {
-    // if (auth.credLoadFinished) {
-    // console.log(`💛💛💛 NavBar: logging out before deleting users`);
-    // handleLogout();
     const result = await deleteSeedUsers(auth.currentAuthUserId);
-    if (result) {
-      // console.log(`Navbar: Seed User deletion finished`);
-      return true;
-    }
+    if (result) return true;
     console.log(`Navbar: Seed User deletion error`);
     return false;
-    // }
-    // console.log(
-    // `💟💟💟 handleResetUsers not invoked: credLoadFinished: ${auth.credLoadFinished}`
-    // );
   };
 
   const handleDeleteSeedRobots = async () => {
-    // if (auth.credLoadFinished) {
     const result = await deleteSeedRobots(auth.currentAuthUserId);
-    if (result) {
-      // console.log(`Navbar: Seed robot deletion finished`);
-      return true;
-    }
+    if (result) return true;
+
     console.log(`Navbar: Seed robot deletion error:`, result);
     return false;
   };
@@ -79,6 +56,9 @@ export default function NavBar() {
           </span>
           <span className="mr2">
             <NavLink to="/login">Login</NavLink>
+          </span>
+          <span className="mr2">
+            <NavLink to="/register">Register</NavLink>
           </span>
         </>
       ) : (

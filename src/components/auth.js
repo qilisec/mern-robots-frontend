@@ -13,7 +13,7 @@ import {
   decodeToken,
 } from 'react-jwt';
 import { format } from 'prettier';
-import { authenticateSignIn } from '../api/index';
+import { authenticateSignIn, authenticateSignUp } from '../api/index';
 
 import {
   privateApi,
@@ -24,6 +24,7 @@ import {
 
 import { changePrivateApiInterceptors } from '../api/interceptors';
 
+const { log } = console;
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -83,6 +84,35 @@ export const AuthProvider = ({ children }) => {
     console.log(`Logout Failed: ${logoutReq}`);
     return false;
   }, [currentAuthUser, currentAuthUserId]);
+
+  const register = useCallback(
+    async (usernameAttempt, emailAttempt, passwordAttempt) => {
+      const newUserInfo = {
+        username: usernameAttempt,
+        email: emailAttempt,
+        password: passwordAttempt,
+      };
+      newUserInfo.roles = ['user'];
+      const registerAttempt = await authenticateSignUp(newUserInfo);
+      log(`Auth register: registerAttempt`, registerAttempt);
+      const { data } = registerAttempt;
+
+      if (data) {
+        console.table(`Register Data:`, data);
+        const { accessToken } = data;
+        const decodedToken = decodeToken(accessToken);
+        const { username: extractedUsername, userId } = decodedToken;
+
+        setCurrentAuthUsername(extractedUsername);
+        setCurrentAuthUserId(userId);
+        setCurrentAuthUser(accessToken);
+        setloginStatusChanged('Log in');
+        return true;
+      }
+      console.log(`register failed`);
+    },
+    []
+  );
 
   const requestRefreshToken = useCallback(async () => {
     const refreshTokenData = await getRefreshToken();
@@ -220,6 +250,7 @@ export const AuthProvider = ({ children }) => {
       credLoadFinished,
       loginStatusChanged,
       login,
+      register,
       logout,
     }),
     [
@@ -229,6 +260,7 @@ export const AuthProvider = ({ children }) => {
       credLoadFinished,
       loginStatusChanged,
       login,
+      register,
       logout,
     ]
   );
