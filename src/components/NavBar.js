@@ -1,6 +1,6 @@
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './auth';
-import { getRefreshToken, getProfilePage } from '../api/privateApi';
+import { getRefreshToken } from '../api/privateApi';
 import {
   reseedUsers,
   deleteSeedUsers,
