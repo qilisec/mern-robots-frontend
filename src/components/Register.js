@@ -25,19 +25,39 @@ export function Register() {
   };
 
   return (
-    <div>
-      <label>
+    <div className="Register">
+      <h1 className="MultiPageForm">Register</h1>
+      <label className="MultiPageForm">
         Username:{' '}
-        <input type="text" name="usernameInput" onChange={setRegisterInput} />
+        <input
+          className="MultiPageForm"
+          type="text"
+          name="usernameInput"
+          onChange={setRegisterInput}
+        />
       </label>
-      <label>
+      <label className="MultiPageForm">
         Email:{' '}
-        <input type="text" name="emailInput" onChange={setRegisterInput} />
+        <input
+          className="MultiPageForm"
+          type="text"
+          name="emailInput"
+          onChange={setRegisterInput}
+        />
       </label>
-      <label>
+      <label className="MultiPageForm">
         Password:{' '}
-        <input type="text" name="passwordInput" onChange={setRegisterInput} />
-        <button type="button" onClick={handleRegistration}>
+        <input
+          className="MultiPageForm"
+          type="text"
+          name="passwordInput"
+          onChange={setRegisterInput}
+        />
+        <button
+          className="MultiPageForm"
+          type="button"
+          onClick={handleRegistration}
+        >
           Register
         </button>
       </label>

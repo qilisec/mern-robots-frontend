@@ -19,17 +19,28 @@ export function Login() {
   };
 
   return (
-    <div>
-      <label>
+    <div className="Login">
+      <h1 className="MultiPageForm">Login</h1>
+      <label className="MultiPageForm">
         Username:{' '}
-        <input type="text" name="usernameInput" onChange={setLoginInput} />
+        <input
+          className="MultiPageForm"
+          type="text"
+          name="usernameInput"
+          onChange={setLoginInput}
+        />
         {/* <input type="text" onChange={(e) => useLoginForm(e.target.value)} /> */}
       </label>
-      <label>
+      <label className="MultiPageForm">
         Password:{' '}
-        <input type="text" name="passwordInput" onChange={setLoginInput} />
+        <input
+          className="MultiPageForm"
+          type="text"
+          name="passwordInput"
+          onChange={setLoginInput}
+        />
         {/* <input type="text" onChange={(e) => setPassword(e.target.value)} /> */}
-        <button type="button" onClick={handleLogin}>
+        <button className="MultiPageForm" type="button" onClick={handleLogin}>
           Login
         </button>
       </label>

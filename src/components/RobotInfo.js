@@ -19,7 +19,7 @@ export default function RobotInfo({ robots }) {
   const [currentRobot, setCurrentRobot] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const isMounted = useIsMounted();
-
+  console.log(`robotInfo component invoked`);
   // console.log(`robots is ${robots}`);
 
   useEffect(() => {

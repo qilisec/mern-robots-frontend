@@ -18,6 +18,13 @@ import { createRobot, getRobotById, getAllRobots } from '../api/index.js';
 import { getRefreshToken } from '../api/privateApi';
 import User1Signin from '../components/User1Signin';
 import User2Signin from '../components/User2Signin';
+import CreateRobotForm from '../components/CreateRobotForm/CreateRobotForm';
+
+import Step1 from '../components/CreateRobotForm/Step1';
+import Step2 from '../components/CreateRobotForm/Step2';
+import Result from '../components/CreateRobotForm/Result';
+
+import '../styles.css';
 
 const { log } = console;
 function App() {
@@ -192,6 +199,9 @@ function App() {
             }
           />
           <Route path="/about" exact element={<About />} />
+          <Route exact path="/robot" element={<Step1 />} />
+          <Route exact path="/robot/step2" element={<Step2 />} />
+          <Route path="/robot/result" element={<Result />} />
           <Route path="/robot/:id" element={<RobotInfo robots={robots} />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -200,6 +210,7 @@ function App() {
           <Route path="/getrobotlist" element={<GetRobotList />} />
           <Route path="/user1signin" element={<User1Signin />} />
           <Route path="/user2signin" element={<User2Signin />} />
+          {/* <Route path="/robot" element={<CreateRobotForm />} /> */}
           <Route
             path="/authentication/refresh"
             element={() => getRefreshToken()}

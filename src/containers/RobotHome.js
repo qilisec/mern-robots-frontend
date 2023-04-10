@@ -39,7 +39,10 @@ export default function RobotHome({
       {currentUsername && (
         <div>
           <h2>Hello {auth.currentAuthUsername}. Your access token is:</h2>
-          <h2 className="overflow-scroll dib-m mh6">{auth.currentAuthUser}</h2>
+          <h2 className="dib-m mh6">
+            {/* <h2 className="overflow-scroll dib-m mh6"> */}
+            ...{auth.currentAuthUser.slice(-10)}
+          </h2>
           {/* <h2>Your refreshToken is {auth.currentRefreshToken}</h2> */}
         </div>
       )}

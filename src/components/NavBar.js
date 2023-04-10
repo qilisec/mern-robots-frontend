@@ -99,6 +99,9 @@ export default function NavBar() {
           Delete Seed Robots
         </NavLink>
       </span>
+      <span className="mr2">
+        <NavLink to="/robot">Create Robot</NavLink>
+      </span>
     </nav>
   );
 }

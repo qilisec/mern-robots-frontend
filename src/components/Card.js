@@ -8,6 +8,7 @@ const Card = ({ id, firstName, lastName, email, phone }) => (
     <img alt="robots" src={`https://robohash.org/${id}?200`} />
     <div className="">
       <ErrorBoundary>
+        {/* <Link style={{ color: 'black' }} to={`/robot/${id}`}> */}
         <Link to={`/robot/${id}`}>
           {firstName} {lastName}
         </Link>
