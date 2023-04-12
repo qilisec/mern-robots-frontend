@@ -13,12 +13,6 @@ function Form() {
     employment_status: null,
   });
 
-  //   const boxStyle = {
-  //     width: '70%',
-  //     margin: '1rem auto',
-  //     textAlign: 'center',
-  //     padding: '1rem 0',
-  //   };
   const conditionalComponent = () => {
     switch (page) {
       case 0:

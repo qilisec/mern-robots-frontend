@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import './RobotInfo.css';
 import PropTypes from 'prop-types';
 
 function useIsMounted() {
@@ -51,18 +50,25 @@ export default function RobotInfo({ robots }) {
       const { address, city, postalCode, state } = currentRobot.address;
       console.log(`currentRobot is ${currentRobot.robotID}`);
       const robotInfo = (
-        <div className="flex justify-center">
-          <ul className="">
-            <li>
+        <div className="my-8 text-center ">
+          <h1 className="text-white text-3xl font-bold pb-3 ">Profile</h1>
+          <ul className="inline-block text-center">
+            <li className="text-white">
               Name: {currentRobot.firstName} {currentRobot.lastName}
             </li>
-            <li>Birthdate: {currentRobot.birthDate}</li>
-            <li>Age: {currentRobot.age}</li>
-            <li>Gender: {currentRobot.gender}</li>
-            <li>Height: {currentRobot.height}</li>
-            <li>Bloodtype: {currentRobot.bloodGroup}</li>
-            <li>Eye Color: {currentRobot.eyeColor}</li>
-            <li>
+            <li className="text-white my-1 ">
+              Birthdate: {currentRobot.birthDate}
+            </li>
+            <li className="text-white my-1">Age: {currentRobot.age}</li>
+            <li className="text-white my-1">Gender: {currentRobot.gender}</li>
+            <li className="text-white my-1">Height: {currentRobot.height}</li>
+            <li className="text-white my-1">
+              Bloodtype: {currentRobot.bloodGroup}
+            </li>
+            <li className="text-white my-1">
+              Eye Color: {currentRobot.eyeColor}
+            </li>
+            <li className="text-white my-1">
               Address: {address} <br />
               {city}, {postalCode} {state}
             </li>

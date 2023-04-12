@@ -58,11 +58,11 @@ export const deleteRobotById = (id) =>
 
 export const authenticateSignIn = async (payload, res) => {
   const signinResult = await api.post(`/authentication/signin`, payload, {
-    // withCredentials: true,
+    withCredentials: true,
     secure: true,
     headers: { 'current-function': 'authenticateSignin' },
   });
-
+  // console.log(`authSignin`, signinResult.data);
   // No way to tell if the RT cookie was obtained. Only way to do so is to attempt to pass it to the backend
   return signinResult;
 };

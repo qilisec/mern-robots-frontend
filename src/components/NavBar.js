@@ -1,6 +1,6 @@
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './auth';
-import { getRefreshToken } from '../api/privateApi';
+import { getRefreshToken, getNewAccessToken } from '../api/privateApi';
 import {
   reseedUsers,
   deleteSeedUsers,
@@ -43,21 +43,21 @@ export default function NavBar() {
 
   return (
     <nav>
-      <span className="ma2">
+      <span className="text-white ml-1 mr-3 font-extralight">
         <NavLink to="/">Home</NavLink>
       </span>
       {!loginStatus ? (
         <>
-          <span className="mr2">
+          <span className="text-white mx-3 font-extralight">
             <NavLink to="/user1signin">Signin User1</NavLink>
           </span>
-          <span className="mr2">
+          <span className="text-white mx-3 font-extralight">
             <NavLink to="/user2signin">Signin User2</NavLink>
           </span>
-          <span className="mr2">
+          <span className="text-white mx-3 font-extralight">
             <NavLink to="/login">Login</NavLink>
           </span>
-          <span className="mr2">
+          <span className="text-white mx-3 font-extralight">
             <NavLink to="/register">Register</NavLink>
           </span>
         </>
@@ -66,30 +66,30 @@ export default function NavBar() {
           {/* <span className="mr2">
             <Link onClick={getUserId}>Profile</Link>
           </span> */}
-          <span className="mr2">
+          <span className="text-white mx-3 font-extralight">
             <NavLink to="/profile">Profile</NavLink>
           </span>
-          <span className="mr2">
+          <span className="text-white mx-3 font-extralight">
             <Link onClick={handleLogout}>Logout</Link>
           </span>
         </>
       )}
-      <span className="mr2">
-        <NavLink to="/" onClick={() => getRefreshToken()}>
+      <span className="text-white mx-3 font-extralight">
+        <NavLink to="/" onClick={() => getNewAccessToken()}>
           Refresh AT
         </NavLink>
       </span>
-      <span className="mr2">
+      <span className="text-white mx-3 font-extralight">
         <NavLink to="/" onClick={() => handleReseedUsers()}>
           Reseed Users
         </NavLink>
       </span>
-      <span className="mr2">
+      <span className="text-white mx-3 font-extralight">
         <NavLink to="/" onClick={() => handleDeleteSeedUsers()}>
           Delete Seeded Users
         </NavLink>
       </span>
-      <span className="mr2">
+      <span className="text-white mx-3 font-extralight">
         <NavLink
           to="/"
           onClick={() => {
@@ -99,7 +99,7 @@ export default function NavBar() {
           Delete Seed Robots
         </NavLink>
       </span>
-      <span className="mr2">
+      <span className="text-white mx-3 font-extralight">
         <NavLink to="/robot">Create Robot</NavLink>
       </span>
     </nav>

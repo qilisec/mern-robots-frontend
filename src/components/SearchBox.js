@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 const SearchBox = ({ searchChange }) => (
   /* 004_06; searchfield comes from our declared "state", searchChange comes from our declared "props" */
 
-  <div className="pa2">
+  <div className="p-4">
     <input
-      className="pa3 ba b--green bg-lightest-blue"
+      className="p-2 border-solid border-green bg-blue-200"
       type="search"
       placeholder="search robots"
       onChange={searchChange}

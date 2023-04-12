@@ -32,14 +32,20 @@ export default function RobotHome({
     return <h1>Loading</h1>;
   }
   return (
-    <div className="tc">
-      <h1>RoboFriends</h1>
-      <h2>Showing {count} Robots</h2>
+    <div className="text-center my-2.5">
+      <h1 className="text-white text-3xl font-bold pb-3 border-b">
+        RoboFriends
+      </h1>
+      <h2 className="text-white text-white-font-extralight">
+        Showing {count} Robots
+      </h2>
       {/* <h2>Credentials Found? {auth.credentialsFound.toString()}</h2> */}
       {currentUsername && (
         <div>
-          <h2>Hello {auth.currentAuthUsername}. Your access token is:</h2>
-          <h2 className="dib-m mh6">
+          <h2 className="text-white text-white-font-extralight mx-32">
+            Hello {auth.currentAuthUsername}. Your access token is:
+          </h2>
+          <h2 className="text-white text-white-font-extralight mx-32">
             {/* <h2 className="overflow-scroll dib-m mh6"> */}
             ...{auth.currentAuthUser.slice(-10)}
           </h2>
@@ -47,10 +53,18 @@ export default function RobotHome({
         </div>
       )}
       <button
+        className="bg-pink-500 text-white uppercase mt-5 mx-2.5 p-2.5 text-base font-thin tracking-wide inline-block appearance-none border-none rounded"
         type="button"
         onClick={() => setCount((prevCount) => Number(prevCount) + 1)}
       >
         Add Robot
+      </button>
+      <button
+        className="bg-pink-500 text-white uppercase mt-5 mx-2.5 p-2.5 text-base font-thin tracking-wide inline-block appearance-none border-none rounded"
+        type="button"
+        onClick={() => setCount((prevCount) => Number(prevCount) + 10)}
+      >
+        Add 10 Robots
       </button>
       <SearchBox searchChange={onSearchChange} />
       <Scroll>

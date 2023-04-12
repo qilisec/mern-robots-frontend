@@ -1,8 +1,6 @@
 /* eslint-disable import/no-relative-packages, no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-// Do not remove tachyons. Even though it is never explicitly read, I think it is still needed.
-import tachyons from 'tachyons';
 // import { array } from 'prop-types';
 import RobotHome from './RobotHome';
 import About from '../components/About.js';
@@ -23,8 +21,6 @@ import CreateRobotForm from '../components/CreateRobotForm/CreateRobotForm';
 import Step1 from '../components/CreateRobotForm/Step1';
 import Step2 from '../components/CreateRobotForm/Step2';
 import Result from '../components/CreateRobotForm/Result';
-
-import '../styles.css';
 
 const { log } = console;
 function App() {
@@ -180,43 +176,38 @@ function App() {
 
   return (
     <AuthProvider>
-      <div className="App">
-        <div>
-          <NavBar />
-        </div>
-        <Routes>
-          <Route
-            exact
-            path="/"
-            element={
-              <RobotHome
-                count={count}
-                setCount={setCount}
-                robots={robots}
-                searchfield={searchfield}
-                setSearchfield={setSearchfield}
-              />
-            }
-          />
-          <Route path="/about" exact element={<About />} />
-          <Route exact path="/robot" element={<Step1 />} />
-          <Route exact path="/robot/step2" element={<Step2 />} />
-          <Route path="/robot/result" element={<Result />} />
-          <Route path="/robot/:id" element={<RobotInfo robots={robots} />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile history="profile" />} />
-          <Route path="/users/:userId" element={<Profile history="users" />} />
-          <Route path="/getrobotlist" element={<GetRobotList />} />
-          <Route path="/user1signin" element={<User1Signin />} />
-          <Route path="/user2signin" element={<User2Signin />} />
-          {/* <Route path="/robot" element={<CreateRobotForm />} /> */}
-          <Route
-            path="/authentication/refresh"
-            element={() => getRefreshToken()}
-          />
-        </Routes>
-      </div>
+      <NavBar />
+      <Routes>
+        <Route
+          exact
+          path="/"
+          element={
+            <RobotHome
+              count={count}
+              setCount={setCount}
+              robots={robots}
+              searchfield={searchfield}
+              setSearchfield={setSearchfield}
+            />
+          }
+        />
+        <Route path="/about" exact element={<About />} />
+        <Route exact path="/robot" element={<Step1 />} />
+        <Route exact path="/robot/step2" element={<Step2 />} />
+        <Route path="/robot/result" element={<Result />} />
+        <Route path="/robot/:id" element={<RobotInfo robots={robots} />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile history="profile" />} />
+        <Route path="/users/:userId" element={<Profile history="users" />} />
+        <Route path="/getrobotlist" element={<GetRobotList />} />
+        <Route path="/user1signin" element={<User1Signin />} />
+        <Route path="/user2signin" element={<User2Signin />} />
+        <Route
+          path="/authentication/refresh"
+          element={() => getRefreshToken()}
+        />
+      </Routes>
     </AuthProvider>
   );
 }
