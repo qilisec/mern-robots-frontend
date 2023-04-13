@@ -1,62 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { Box, Button, Title } from '@mantine/core';
+import { useStateMachine } from 'little-state-machine';
+import updateAction from './updateAction';
 import First from './Step1';
 import Second from './Step2';
 import Result from './Result';
 
 function Form() {
-  const [page, setPage] = useState(0);
+  const { handleSubmit } = useForm();
+  const { actions, state } = useStateMachine({ updateAction });
+  console.log(`CreateRobotForm`, state);
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    employment_status: null,
-  });
+  useEffect(() => {
+    if (!state.launchedForm && state.page !== 0) {
+      console.log(`CreateRobotForm accessed from navbar`);
+      actions.updateAction({ page: 0, launchedForm: true });
+    }
+  }, []);
 
   const conditionalComponent = () => {
-    switch (page) {
+    switch (state.page) {
       case 0:
-        return <First formData={formData} setFormData={setFormData} />;
+        return <First />;
       case 1:
-        return <Second formData={formData} setFormData={setFormData} />;
+        return <Second />;
       case 2:
-        return <Result formData={formData} setFormData={setFormData} />;
+        return <Result />;
       default:
-        return <First formData={formData} setFormData={setFormData} />;
+        return <First />;
     }
   };
 
-  const handleSubmit = () => {
-    setPage(page + 1);
-  };
-
-  return (
-    <Box>
-      {conditionalComponent()}
-      {page > 0 && (
-        <Button className="MultiPageFormBtn" onClick={() => setPage(page - 1)}>
-          Back
-        </Button>
-      )}
-      <Button className="MultiPageFormBtn Test1" onClick={handleSubmit}>
-        {page === 0 || page === 1 ? 'Next' : 'Submit'}
-      </Button>
-    </Box>
-  );
-
-  //   return (
-  //     <Box sx={boxStyle}>
-  //       <Title
-  //         sx={{
-  //           textAlign: 'center',
-  //         }}
-  //         order={2}
-  //       >
-  //         Hey there!
-  //       </Title>
-  //       {/* Steps */}
-  //       <Button>Submit</Button>
-  //     </Box>
-  //   );
+  return <>{conditionalComponent()}</>;
 }
 export default Form;

@@ -4,7 +4,11 @@ const plugin = require('tailwindcss/plugin');
 module.exports = {
   content: ['./src/**/*.{html,js, jsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#FFFFFF',
+      },
+    },
   },
   plugins: [
     plugin(({ matchUtilities, theme }) => {

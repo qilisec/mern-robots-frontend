@@ -1,4 +1,5 @@
 import { NavLink, useNavigate, Link } from 'react-router-dom';
+import { useStateMachine } from 'little-state-machine';
 import { useAuth } from './auth';
 import { getRefreshToken, getNewAccessToken } from '../api/privateApi';
 import {
@@ -6,12 +7,20 @@ import {
   deleteSeedUsers,
   deleteSeedRobots,
 } from '../api/reseedUsers';
+import updateAction from './CreateRobotForm/updateAction';
 
 export default function NavBar() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const { actions, state } = useStateMachine({ updateAction });
   const loginStatus =
     auth && auth.currentAuthUser ? auth.currentAuthUser : null;
+
+  const handleGoHome = () => {
+    console.log(`invoked HandleGoHome; wiping history`);
+    actions.updateAction({ launchedForm: false });
+    // navigate('/');
+  };
 
   const handleLogout = async () => {
     console.log(`Navbar Logging out`);
@@ -43,63 +52,66 @@ export default function NavBar() {
 
   return (
     <nav>
-      <span className="text-white ml-1 mr-3 font-extralight">
-        <NavLink to="/">Home</NavLink>
+      <span className="NavBar-Head">
+        <NavLink onClick={() => handleGoHome()} to="/">
+          Home
+        </NavLink>
       </span>
       {!loginStatus ? (
         <>
-          <span className="text-white mx-3 font-extralight">
+          <span className="NavBar-Link">
             <NavLink to="/user1signin">Signin User1</NavLink>
           </span>
-          <span className="text-white mx-3 font-extralight">
+          <span className="NavBar-Link">
             <NavLink to="/user2signin">Signin User2</NavLink>
           </span>
-          <span className="text-white mx-3 font-extralight">
+          <span className="NavBar-Link">
             <NavLink to="/login">Login</NavLink>
           </span>
-          <span className="text-white mx-3 font-extralight">
+          <span className="NavBar-Link">
             <NavLink to="/register">Register</NavLink>
           </span>
         </>
       ) : (
         <>
-          {/* <span className="mr2">
-            <Link onClick={getUserId}>Profile</Link>
-          </span> */}
-          <span className="text-white mx-3 font-extralight">
+          <span className="NavBar-Link">
             <NavLink to="/profile">Profile</NavLink>
           </span>
-          <span className="text-white mx-3 font-extralight">
-            <Link onClick={handleLogout}>Logout</Link>
+          <span className="NavBar-Link">
+            <NavLink onClick={() => handleLogout()}>Logout</NavLink>
           </span>
         </>
       )}
-      <span className="text-white mx-3 font-extralight">
+      <span className="NavBar-Link">
         <NavLink to="/" onClick={() => getNewAccessToken()}>
           Refresh AT
         </NavLink>
       </span>
-      <span className="text-white mx-3 font-extralight">
-        <NavLink to="/" onClick={() => handleReseedUsers()}>
-          Reseed Users
-        </NavLink>
-      </span>
-      <span className="text-white mx-3 font-extralight">
-        <NavLink to="/" onClick={() => handleDeleteSeedUsers()}>
-          Delete Seeded Users
-        </NavLink>
-      </span>
-      <span className="text-white mx-3 font-extralight">
-        <NavLink
-          to="/"
-          onClick={() => {
-            handleDeleteSeedRobots();
-          }}
-        >
-          Delete Seed Robots
-        </NavLink>
-      </span>
-      <span className="text-white mx-3 font-extralight">
+      {auth.currentAuthUsername === 'admin' && (
+        <>
+          <span className="NavBar-Link">
+            <NavLink to="/" onClick={() => handleReseedUsers()}>
+              Reseed Users
+            </NavLink>
+          </span>
+          <span className="NavBar-Link">
+            <NavLink to="/" onClick={() => handleDeleteSeedUsers()}>
+              Delete Seeded Users
+            </NavLink>
+          </span>
+          <span className="NavBar-Link">
+            <NavLink
+              to="/"
+              onClick={() => {
+                handleDeleteSeedRobots();
+              }}
+            >
+              Delete Seed Robots
+            </NavLink>
+          </span>
+        </>
+      )}
+      <span className="NavBar-Link">
         <NavLink to="/robot">Create Robot</NavLink>
       </span>
     </nav>

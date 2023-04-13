@@ -6,50 +6,72 @@ import ComponentWithRouterProp from './ComponentWithRouterProp';
 import updateAction from './updateAction';
 
 const Step1 = (props) => {
-  //   console.log(`Step1: props`, props);
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
   const { actions, state } = useStateMachine({ updateAction });
-  const { history } = props;
-  const onSubmit = (data) => {
+
+  console.log(`Step1`, state);
+
+  const prevPage = (data) => {
+    data.page = state.page - 1;
     actions.updateAction(data);
-    // props.history.push('./step2');
-    navigate('./step2');
+  };
+  const nextPage = (data) => {
+    data.page = state.page + 1;
+    actions.updateAction(data);
+  };
+
+  const onSubmit = (data) => {
+    console.log(`onSubmit:`, data);
+    data.page = 2;
+    actions.updateAction(data);
   };
 
   return (
-    // <div className="MultiPageForm">
-    // <div className="bg-slate-850 max-w-xl text-center my-2.5 mx-auto mw- p-4">
-    <div className="max-w-xl text-center my-2.5 mx-auto p-4 ">
-      <h1 className="text-white text-3xl font-bold pb-3 border-b font-sans">
-        Create Robot
-      </h1>
-      <form className="max-w-[500px] mx-auto" onSubmit={handleSubmit(onSubmit)}>
-        <h2 className="text-white font-extralight">Step 1</h2>
-        <label className="leading-loose text-left block mb-3.5 mt-5 text-white text-sm font-extralight">
+    <div className="create-robot-form">
+      <h1 className="create-robot-form">Create Robot</h1>
+      <form className="create-robot-form" onSubmit={handleSubmit(onSubmit)}>
+        <h2 className="create-robot-form">Step 1</h2>
+        <label className="create-robot-form">
           First Name:
           <input
-            className="text-black inline-block box-border w-full border rounded border-white px-3.5 py-2.5 mb-2.5 text-lg"
+            className="create-robot-form"
             {...register('firstName')}
             defaultValue={state.firstName}
           />
         </label>
-        <label className="leading-loose text-left block mb-3.5 mt-5 text-white text-sm font-extralight">
+        <label className="create-robot-form">
           Last Name:
           <input
-            className="text-black inline-block box-border w-full border rounded border-white px-3.5 py-2.5 mb-2.5 text-lg"
+            className="create-robot-form"
             {...register('lastName')}
             defaultValue={state.lastName}
           />
         </label>
-        <input
-          className="bg-pink-500 text-white uppercase mt-10 p-5 text-base font-thin tracking-wide inline-block appearance-none border-none rounded w-full"
-          type="submit"
-        />
+        <input className="create-robot-form" type="submit" />
+        <div className="text-center">
+          {state.page > 0 && (
+            <button
+              type="button"
+              className="fixed w-[270px] py-2 px-5 text-base tracking-wide text-slate-800 uppercase  bg-pink-300 border-none rounded appearance-none place-items-end -translate-x-[280px]"
+              onClick={handleSubmit(prevPage)}
+            >
+              Back
+            </button>
+          )}
+          {state.page < 2 && (
+            <button
+              type="button"
+              className="fixed w-[270px] px-5 py-2 text-base tracking-wide text-slate-800 uppercase translate-x-2 bg-pink-300 border-none rounded appearance-none place-items-end"
+              onClick={handleSubmit(nextPage)}
+            >
+              Next
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
 };
 
 export default ComponentWithRouterProp(Step1);
-// export default withRouter(Step1);

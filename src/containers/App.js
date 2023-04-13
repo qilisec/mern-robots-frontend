@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 // import { array } from 'prop-types';
+import { useStateMachine } from 'little-state-machine';
 import RobotHome from './RobotHome';
 import About from '../components/About.js';
 import RobotInfo from '../components/RobotInfo.js';
@@ -22,8 +23,11 @@ import Step1 from '../components/CreateRobotForm/Step1';
 import Step2 from '../components/CreateRobotForm/Step2';
 import Result from '../components/CreateRobotForm/Result';
 
+import updateAction from '../components/CreateRobotForm/updateAction';
+
 const { log } = console;
 function App() {
+  const { actions, state } = useStateMachine({ updateAction });
   const [searchfield, setSearchfield] = useState('');
   const [count, setCount] = useState(5);
   const [robots, setRobots] = useState([]);
@@ -192,7 +196,7 @@ function App() {
           }
         />
         <Route path="/about" exact element={<About />} />
-        <Route exact path="/robot" element={<Step1 />} />
+        <Route exact path="/robot" element={<CreateRobotForm />} />
         <Route exact path="/robot/step2" element={<Step2 />} />
         <Route path="/robot/result" element={<Result />} />
         <Route path="/robot/:id" element={<RobotInfo robots={robots} />} />

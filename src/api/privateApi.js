@@ -65,7 +65,6 @@ export const getNewAccessToken = async () => {
       headers: { 'current-function': 'refreshAccessToken' },
     });
     const { newAccessToken } = check.data;
-    log(`getNewAccessToken finished; accessToken`, newAccessToken);
     return newAccessToken;
   } catch (err) {
     log(`getNewAccessToken err`, err);

@@ -120,10 +120,7 @@ export const AuthProvider = ({ children }) => {
     return refreshTokenData;
   }, []);
 
-  const refreshAccessToken = useCallback(
-    async (refreshToken) => await getNewAccessToken(refreshToken),
-    []
-  );
+  const refreshAccessToken = useCallback(async () => getNewAccessToken(), []);
 
   const recoverUser = useCallback(async (accessToken) => {
     if (accessToken) {
@@ -177,7 +174,7 @@ export const AuthProvider = ({ children }) => {
           if (refreshToken) {
             console.log(`Init 2️⃣: Recovered RT, generating new AT!`);
 
-            const newAccessToken = await refreshAccessToken(refreshToken);
+            const newAccessToken = await refreshAccessToken();
             console.log(`Init 3️⃣: Generated new AT: ${newAccessToken}`);
 
             const { extractedUsername, extractedUserId } = await decodeJwt(

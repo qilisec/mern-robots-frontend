@@ -8,3 +8,39 @@ body {
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
 }
+
+div.create-robot-form {
+  @apply max-w-xl text-center mt-2.5 mx-auto pt-4 px-4;
+}
+
+h1.create-robot-form {
+  @apply pb-3 text-3xl font-bold text-white border-b;
+}
+
+h2.create-robot-form {
+  @apply text-white font-extralight;
+}
+
+form.create-robot-form {
+  @apply max-w-md mx-auto;
+}
+
+label.create-robot-form {
+  @apply leading-loose text-left block mb-3.5 mt-5 text-white text-sm font-extralight;
+}
+
+input.create-robot-form {
+  @apply text-black inline-block box-border w-full border rounded border-white px-3.5 py-2.5 mb-2.5 text-lg;
+}
+
+input[type="submit"].create-robot-form {
+  @apply inline-block w-full px-5 py-3 mt-5 mb-1 text-base font-thin tracking-wide text-white uppercase bg-pink-500 border-none rounded appearance-none;
+}
+
+span.NavBar-Head {
+  @apply text-white ml-1 mr-3 font-extralight;
+}
+
+span.NavBar-Link {
+  @apply text-white mx-3 font-extralight;
+}

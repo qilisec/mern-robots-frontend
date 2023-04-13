@@ -6,10 +6,10 @@ import App from './containers/App';
 import './dist/output.css';
 
 createStore({
-  data: {
-    firstName: '',
-    lastName: '',
-  },
+  firstName: '',
+  lastName: '',
+  page: 0,
+  launchedForm: false,
 });
 
 const container = document.getElementById('root');
