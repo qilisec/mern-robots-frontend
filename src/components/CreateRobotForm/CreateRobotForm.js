@@ -1,14 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { Box, Button, Title } from '@mantine/core';
+import { useEffect } from 'react';
 import { useStateMachine } from 'little-state-machine';
-import updateAction from './updateAction';
+import updateAction from '../../updateAction';
 import First from './Step1';
 import Second from './Step2';
 import Result from './Result';
 
 function Form() {
-  const { handleSubmit } = useForm();
   const { actions, state } = useStateMachine({ updateAction });
   console.log(`CreateRobotForm`, state);
 

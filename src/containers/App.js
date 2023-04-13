@@ -23,7 +23,7 @@ import Step1 from '../components/CreateRobotForm/Step1';
 import Step2 from '../components/CreateRobotForm/Step2';
 import Result from '../components/CreateRobotForm/Result';
 
-import updateAction from '../components/CreateRobotForm/updateAction';
+import updateAction from '../updateAction';
 
 const { log } = console;
 function App() {

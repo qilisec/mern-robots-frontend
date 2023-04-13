@@ -1,13 +1,10 @@
 import { useForm } from 'react-hook-form';
-// import { withRouter } from 'react-router-dom';
-import { Navigate, useNavigate } from 'react-router-dom';
 import { useStateMachine } from 'little-state-machine';
-import ComponentWithRouterProp from './ComponentWithRouterProp';
-import updateAction from './updateAction';
+import ComponentWithRouterProp from '../ComponentWithRouterProp';
+import updateAction from '../../updateAction';
 
 const Step1 = (props) => {
   const { register, handleSubmit } = useForm();
-  const navigate = useNavigate();
   const { actions, state } = useStateMachine({ updateAction });
 
   console.log(`Step1`, state);

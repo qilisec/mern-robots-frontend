@@ -91,6 +91,7 @@ export const AuthProvider = ({ children }) => {
         username: usernameAttempt,
         email: emailAttempt,
         password: passwordAttempt,
+        createdBy: 'user',
       };
       newUserInfo.roles = ['user'];
       const registerAttempt = await authenticateSignUp(newUserInfo);

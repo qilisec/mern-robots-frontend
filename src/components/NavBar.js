@@ -7,7 +7,7 @@ import {
   deleteSeedUsers,
   deleteSeedRobots,
 } from '../api/reseedUsers';
-import updateAction from './CreateRobotForm/updateAction';
+import updateAction from '../updateAction';
 
 export default function NavBar() {
   const auth = useAuth();
@@ -20,34 +20,6 @@ export default function NavBar() {
     console.log(`invoked HandleGoHome; wiping history`);
     actions.updateAction({ launchedForm: false });
     // navigate('/');
-  };
-
-  const handleLogout = async () => {
-    console.log(`Navbar Logging out`);
-    await auth.logout();
-    navigate('/');
-  };
-
-  const handleReseedUsers = async () => {
-    const result = await reseedUsers(auth.currentAuthUserId);
-    if (result) return true;
-    console.log(`Navbar: Reseed was not completed`);
-    return false;
-  };
-
-  const handleDeleteSeedUsers = async () => {
-    const result = await deleteSeedUsers(auth.currentAuthUserId);
-    if (result) return true;
-    console.log(`Navbar: Seed User deletion error`);
-    return false;
-  };
-
-  const handleDeleteSeedRobots = async () => {
-    const result = await deleteSeedRobots(auth.currentAuthUserId);
-    if (result) return true;
-
-    console.log(`Navbar: Seed robot deletion error:`, result);
-    return false;
   };
 
   return (
@@ -78,7 +50,9 @@ export default function NavBar() {
             <NavLink to="/profile">Profile</NavLink>
           </span>
           <span className="NavBar-Link">
-            <NavLink onClick={() => handleLogout()}>Logout</NavLink>
+            <NavLink onClick={() => auth.logout()} to="/">
+              Logout
+            </NavLink>
           </span>
         </>
       )}
@@ -90,12 +64,15 @@ export default function NavBar() {
       {auth.currentAuthUsername === 'admin' && (
         <>
           <span className="NavBar-Link">
-            <NavLink to="/" onClick={() => handleReseedUsers()}>
+            <NavLink to="/" onClick={() => reseedUsers(auth.currentAuthUserId)}>
               Reseed Users
             </NavLink>
           </span>
           <span className="NavBar-Link">
-            <NavLink to="/" onClick={() => handleDeleteSeedUsers()}>
+            <NavLink
+              to="/"
+              onClick={() => deleteSeedUsers(auth.currentAuthUserId)}
+            >
               Delete Seeded Users
             </NavLink>
           </span>
@@ -103,7 +80,7 @@ export default function NavBar() {
             <NavLink
               to="/"
               onClick={() => {
-                handleDeleteSeedRobots();
+                deleteSeedRobots(auth.currentAuthUserId);
               }}
             >
               Delete Seed Robots

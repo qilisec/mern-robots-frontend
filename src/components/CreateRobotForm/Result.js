@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useStateMachine } from 'little-state-machine';
-import updateAction from './updateAction';
+import updateAction from '../../updateAction';
 
 const Result = (props) => {
   const { actions, state } = useStateMachine({ updateAction });

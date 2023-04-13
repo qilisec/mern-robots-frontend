@@ -26,7 +26,7 @@ export function Register() {
 
   return (
     <div className="max-w-[600px] text-center my-2.5 mx-auto pa-[15px] font-sans">
-      <h1 className="text-white text-3xl font-bold pb-3 border-b ">Register</h1>
+      <h1 className="pb-3 text-3xl font-bold text-white border-b ">Register</h1>
       <label className="leading-loose text-left block mb-3.5 mt-5 text-white text-sm font-extralight">
         Username:{' '}
         <input
@@ -54,7 +54,7 @@ export function Register() {
           onChange={setRegisterInput}
         />
         <button
-          className="bg-pink-500 text-white uppercase mt-10 p-5 text-base font-thin tracking-wide inline-block appearance-none border-none rounded w-full"
+          className="inline-block w-full p-5 mt-10 text-base font-thin tracking-wide text-white uppercase bg-pink-500 border-none rounded appearance-none"
           type="submit"
           onClick={handleRegistration}
         >

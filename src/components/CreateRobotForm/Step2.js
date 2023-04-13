@@ -1,10 +1,9 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useNavigate } from 'react-router-dom';
 import { useStateMachine } from 'little-state-machine';
-import ComponentWithRouterProp from './ComponentWithRouterProp';
-import updateAction from './updateAction';
+import ComponentWithRouterProp from '../ComponentWithRouterProp';
+import updateAction from '../../updateAction';
 
 const Step2 = (props) => {
   const { register, handleSubmit } = useForm();
