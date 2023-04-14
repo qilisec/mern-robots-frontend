@@ -692,6 +692,10 @@ video {
   display: table;
 }
 
+.max-h-full {
+  max-height: 100%;
+}
+
 .w-\[270px\] {
   width: 270px;
 }
@@ -724,6 +728,10 @@ video {
   cursor: pointer;
 }
 
+.scroll-m-0 {
+  scroll-margin: 0px;
+}
+
 .appearance-none {
   -webkit-appearance: none;
           appearance: none;
@@ -731,6 +739,10 @@ video {
 
 .place-items-end {
   place-items: end;
+}
+
+.overflow-auto {
+  overflow: auto;
 }
 
 .overflow-scroll {
@@ -987,8 +999,8 @@ form.create-robot-form {
 }
 
 label.create-robot-form {
-  margin-bottom: 0.875rem;
-  margin-top: 1.25rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
   display: block;
   text-align: left;
   font-size: 0.875rem;
@@ -1000,7 +1012,7 @@ label.create-robot-form {
 }
 
 input.create-robot-form {
-  margin-bottom: 0.625rem;
+  margin-bottom: 0.25rem;
   box-sizing: border-box;
   display: inline-block;
   width: 100%;
@@ -1019,7 +1031,7 @@ input.create-robot-form {
 }
 
 input[type="submit"].create-robot-form {
-  margin-top: 1.25rem;
+  margin-top: 0.75rem;
   margin-bottom: 0.25rem;
   display: inline-block;
   width: 100%;

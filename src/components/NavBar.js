@@ -8,6 +8,7 @@ import {
   deleteSeedRobots,
 } from '../api/reseedUsers';
 import updateAction from '../updateAction';
+import { robotFormDefault } from '..';
 
 export default function NavBar() {
   const auth = useAuth();
@@ -20,6 +21,11 @@ export default function NavBar() {
     console.log(`invoked HandleGoHome; wiping history`);
     actions.updateAction({ launchedForm: false });
     // navigate('/');
+  };
+
+  const resetRobotFormState = () => {
+    actions.updateAction({ ...robotFormDefault });
+    console.log(`resetRobotFormStore`, state);
   };
 
   return (
@@ -90,6 +96,11 @@ export default function NavBar() {
       )}
       <span className="NavBar-Link">
         <NavLink to="/robot">Create Robot</NavLink>
+      </span>
+      <span className="NavBar-Link">
+        <NavLink onClick={() => resetRobotFormState()} to="/">
+          Reset RobotForm Store
+        </NavLink>
       </span>
     </nav>
   );

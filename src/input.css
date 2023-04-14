@@ -10,7 +10,7 @@ body {
 }
 
 div.create-robot-form {
-  @apply max-w-xl text-center mt-2.5 mx-auto pt-4 px-4;
+  @apply w-full text-center mt-2.5 mx-auto pt-4 px-4;
 }
 
 h1.create-robot-form {
@@ -26,21 +26,29 @@ form.create-robot-form {
 }
 
 label.create-robot-form {
-  @apply leading-loose text-left block mb-3.5 mt-5 text-white text-sm font-extralight;
+  @apply block mt-1 mb-1 text-sm leading-loose text-left text-white font-extralight;
 }
 
 input.create-robot-form {
-  @apply text-black inline-block box-border w-full border rounded border-white px-3.5 py-2.5 mb-2.5 text-lg;
+  @apply text-black inline-block box-border w-full border rounded border-white px-3.5 py-2.5 mb-1 text-lg;
 }
 
 input[type="submit"].create-robot-form {
-  @apply inline-block w-full px-5 py-3 mt-5 mb-1 text-base font-thin tracking-wide text-white uppercase bg-pink-500 border-none rounded appearance-none;
+  @apply inline-block w-full px-5 py-3 mt-3 mb-1 text-base font-thin tracking-wide text-white uppercase bg-pink-500 border-none rounded appearance-none;
 }
 
 span.NavBar-Head {
-  @apply text-white ml-1 mr-3 font-extralight;
+  @apply ml-1 mr-3 text-white font-extralight;
 }
 
 span.NavBar-Link {
-  @apply text-white mx-3 font-extralight;
+  @apply mx-3 text-white font-extralight;
+}
+
+button[type="button"].create-robot-form-prev {
+  @apply fixed w-[270px] py-2 px-5 text-base tracking-wide text-slate-800 uppercase  bg-pink-300 border-none rounded appearance-none place-items-end -translate-x-[280px];
+}
+
+button[type="button"].create-robot-form-next {
+  @apply fixed w-[270px] px-5 py-2 text-base tracking-wide text-slate-800 uppercase translate-x-2 bg-pink-300 border-none rounded appearance-none place-items-end;
 }

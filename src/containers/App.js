@@ -33,6 +33,7 @@ function App() {
   const [robots, setRobots] = useState([]);
   const [source, setSource] = useState('');
   // console.log(`Render`);
+  console.log(`App little-state-machine: initial State:`, state);
 
   const getRobotSourceAndFetch = async () => {
     try {
@@ -197,7 +198,7 @@ function App() {
         />
         <Route path="/about" exact element={<About />} />
         <Route exact path="/robot" element={<CreateRobotForm />} />
-        <Route exact path="/robot/step2" element={<Step2 />} />
+        {/* <Route exact path="/robot/step2" element={<Step2 />} /> */}
         <Route path="/robot/result" element={<Result />} />
         <Route path="/robot/:id" element={<RobotInfo robots={robots} />} />
         <Route path="/login" element={<Login />} />

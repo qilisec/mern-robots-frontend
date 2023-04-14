@@ -22,14 +22,14 @@ const Step2 = (props) => {
     actions.updateAction(data);
   };
   const nextPage = (data) => {
-    data.page = 2;
+    data.page = state.page + 1;
     actions.updateAction(data);
   };
   return (
     <div className="create-robot-form">
       <h1 className="create-robot-form">Create Robot</h1>
       <form className="create-robot-form" onSubmit={handleSubmit(onSubmit)}>
-        <h2 className="create-robot-form">Step 2</h2>
+        <h2 className="create-robot-form">Step {state.page + 1} of 5</h2>
         <label className="create-robot-form">
           Age:
           <input
@@ -58,7 +58,7 @@ const Step2 = (props) => {
               Back
             </button>
           )}
-          {state.page < 2 && (
+          {state.page < 5 && (
             <button
               type="button"
               className="fixed w-[270px] px-5 py-2 text-base tracking-wide text-slate-800 uppercase translate-x-2 bg-pink-300 border-none rounded appearance-none place-items-end"

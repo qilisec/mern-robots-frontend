@@ -24,25 +24,14 @@ const Result = (props) => {
           .slice(1, -1)
           .replace(/[{}"],?/g, '')}
       </pre>
-      <div className="text-center">
-        {state.page > 0 && (
-          <button
-            type="button"
-            className="fixed w-[270px] py-2 px-5 text-base tracking-wide text-slate-800 uppercase  bg-pink-300 border-none rounded appearance-none place-items-end -translate-x-[280px]"
-            onClick={handleSubmit(prevPage)}
-          >
-            Back
-          </button>
-        )}
-        {state.page < 2 && (
-          <button
-            type="button"
-            className="fixed w-[270px] px-5 py-2 text-base tracking-wide text-slate-800 uppercase translate-x-2 bg-pink-300 border-none rounded appearance-none place-items-end"
-            onClick={handleSubmit(nextPage)}
-          >
-            Next
-          </button>
-        )}
+      <div>
+        <button
+          type="button"
+          className="text-slate-800 bg-pink-300 inline-block w-full py-2 px-5 text-base tracking-wide uppercase border-none rounded appearance-none"
+          onClick={handleSubmit(prevPage)}
+        >
+          Back
+        </button>
       </div>
     </div>
   );
