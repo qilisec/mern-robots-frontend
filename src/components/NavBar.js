@@ -1,122 +1,105 @@
 import { NavLink, useNavigate, Link } from 'react-router-dom';
+import { useStateMachine } from 'little-state-machine';
 import { useAuth } from './auth';
-import { getRefreshToken, getProfilePage } from '../api/privateApi';
+import { getRefreshToken, getNewAccessToken } from '../api/privateApi';
 import {
   reseedUsers,
   deleteSeedUsers,
   deleteSeedRobots,
 } from '../api/reseedUsers';
+import updateAction from '../updateAction';
+import { robotFormDefault } from '..';
 
 export default function NavBar() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const { actions, state } = useStateMachine({ updateAction });
   const loginStatus =
     auth && auth.currentAuthUser ? auth.currentAuthUser : null;
 
-  const handleLogout = async () => {
-    console.log(`Navbar Logging out`);
-    await auth.logout();
-    navigate('/');
+  const handleGoHome = () => {
+    console.log(`invoked HandleGoHome; wiping history`);
+    actions.updateAction({ launchedForm: false });
+    // navigate('/');
   };
 
-  const handleReseedUsers = async () => {
-    // if (auth.credLoadFinished) {
-    // console.log(`💛💛💛 NavBar: logging out before adding new users`);
-    // handleLogout();
-    const result = await reseedUsers(auth.currentAuthUserId);
-    if (result) {
-      // console.log(`Navbar: Reseed complete`);
-      return true;
-    }
-    console.log(`Navbar: Reseed was not completed`);
-    return false;
-    // }
-    // console.log(
-    // `💟💟💟 handleResetUsers not invoked: credLoadFinished: ${auth.credLoadFinished}`
-    // );
-  };
-
-  const handleDeleteSeedUsers = async () => {
-    // if (auth.credLoadFinished) {
-    // console.log(`💛💛💛 NavBar: logging out before deleting users`);
-    // handleLogout();
-    const result = await deleteSeedUsers(auth.currentAuthUserId);
-    if (result) {
-      // console.log(`Navbar: Seed User deletion finished`);
-      return true;
-    }
-    console.log(`Navbar: Seed User deletion error`);
-    return false;
-    // }
-    // console.log(
-    // `💟💟💟 handleResetUsers not invoked: credLoadFinished: ${auth.credLoadFinished}`
-    // );
-  };
-
-  const handleDeleteSeedRobots = async () => {
-    // if (auth.credLoadFinished) {
-    const result = await deleteSeedRobots(auth.currentAuthUserId);
-    if (result) {
-      // console.log(`Navbar: Seed robot deletion finished`);
-      return true;
-    }
-    console.log(`Navbar: Seed robot deletion error:`, result);
-    return false;
+  const resetRobotFormState = () => {
+    actions.updateAction({ ...robotFormDefault });
+    console.log(`resetRobotFormStore`, state);
   };
 
   return (
     <nav>
-      <span className="ma2">
-        <NavLink to="/">Home</NavLink>
+      <span className="NavBar-Head">
+        <NavLink onClick={() => handleGoHome()} to="/">
+          Home
+        </NavLink>
       </span>
       {!loginStatus ? (
         <>
-          <span className="mr2">
+          <span className="NavBar-Link">
             <NavLink to="/user1signin">Signin User1</NavLink>
           </span>
-          <span className="mr2">
+          <span className="NavBar-Link">
             <NavLink to="/user2signin">Signin User2</NavLink>
           </span>
-          <span className="mr2">
+          <span className="NavBar-Link">
             <NavLink to="/login">Login</NavLink>
+          </span>
+          <span className="NavBar-Link">
+            <NavLink to="/register">Register</NavLink>
           </span>
         </>
       ) : (
         <>
-          {/* <span className="mr2">
-            <Link onClick={getUserId}>Profile</Link>
-          </span> */}
-          <span className="mr2">
+          <span className="NavBar-Link">
             <NavLink to="/profile">Profile</NavLink>
           </span>
-          <span className="mr2">
-            <Link onClick={handleLogout}>Logout</Link>
+          <span className="NavBar-Link">
+            <NavLink onClick={() => auth.logout()} to="/">
+              Logout
+            </NavLink>
           </span>
         </>
       )}
-      <span className="mr2">
-        <NavLink to="/" onClick={() => getRefreshToken()}>
+      <span className="NavBar-Link">
+        <NavLink to="/" onClick={() => getNewAccessToken()}>
           Refresh AT
         </NavLink>
       </span>
-      <span className="mr2">
-        <NavLink to="/" onClick={() => handleReseedUsers()}>
-          Reseed Users
-        </NavLink>
+      {auth.currentAuthUsername === 'admin' && (
+        <>
+          <span className="NavBar-Link">
+            <NavLink to="/" onClick={() => reseedUsers(auth.currentAuthUserId)}>
+              Reseed Users
+            </NavLink>
+          </span>
+          <span className="NavBar-Link">
+            <NavLink
+              to="/"
+              onClick={() => deleteSeedUsers(auth.currentAuthUserId)}
+            >
+              Delete Seeded Users
+            </NavLink>
+          </span>
+          <span className="NavBar-Link">
+            <NavLink
+              to="/"
+              onClick={() => {
+                deleteSeedRobots(auth.currentAuthUserId);
+              }}
+            >
+              Delete Seed Robots
+            </NavLink>
+          </span>
+        </>
+      )}
+      <span className="NavBar-Link">
+        <NavLink to="/robot">Create Robot</NavLink>
       </span>
-      <span className="mr2">
-        <NavLink to="/" onClick={() => handleDeleteSeedUsers()}>
-          Delete Seeded Users
-        </NavLink>
-      </span>
-      <span className="mr2">
-        <NavLink
-          to="/"
-          onClick={() => {
-            handleDeleteSeedRobots();
-          }}
-        >
-          Delete Seed Robots
+      <span className="NavBar-Link">
+        <NavLink onClick={() => resetRobotFormState()} to="/">
+          Reset RobotForm Store
         </NavLink>
       </span>
     </nav>

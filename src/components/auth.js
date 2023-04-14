@@ -13,7 +13,7 @@ import {
   decodeToken,
 } from 'react-jwt';
 import { format } from 'prettier';
-import { authenticateSignIn } from '../api/index';
+import { authenticateSignIn, authenticateSignUp } from '../api/index';
 
 import {
   privateApi,
@@ -24,6 +24,7 @@ import {
 
 import { changePrivateApiInterceptors } from '../api/interceptors';
 
+const { log } = console;
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -84,16 +85,43 @@ export const AuthProvider = ({ children }) => {
     return false;
   }, [currentAuthUser, currentAuthUserId]);
 
+  const register = useCallback(
+    async (usernameAttempt, emailAttempt, passwordAttempt) => {
+      const newUserInfo = {
+        username: usernameAttempt,
+        email: emailAttempt,
+        password: passwordAttempt,
+        createdBy: 'user',
+      };
+      newUserInfo.roles = ['user'];
+      const registerAttempt = await authenticateSignUp(newUserInfo);
+      log(`Auth register: registerAttempt`, registerAttempt);
+      const { data } = registerAttempt;
+
+      if (data) {
+        console.table(`Register Data:`, data);
+        const { accessToken } = data;
+        const decodedToken = decodeToken(accessToken);
+        const { username: extractedUsername, userId } = decodedToken;
+
+        setCurrentAuthUsername(extractedUsername);
+        setCurrentAuthUserId(userId);
+        setCurrentAuthUser(accessToken);
+        setloginStatusChanged('Log in');
+        return true;
+      }
+      console.log(`register failed`);
+    },
+    []
+  );
+
   const requestRefreshToken = useCallback(async () => {
     const refreshTokenData = await getRefreshToken();
 
     return refreshTokenData;
   }, []);
 
-  const refreshAccessToken = useCallback(
-    async (refreshToken) => await getNewAccessToken(refreshToken),
-    []
-  );
+  const refreshAccessToken = useCallback(async () => getNewAccessToken(), []);
 
   const recoverUser = useCallback(async (accessToken) => {
     if (accessToken) {
@@ -147,7 +175,7 @@ export const AuthProvider = ({ children }) => {
           if (refreshToken) {
             console.log(`Init 2️⃣: Recovered RT, generating new AT!`);
 
-            const newAccessToken = await refreshAccessToken(refreshToken);
+            const newAccessToken = await refreshAccessToken();
             console.log(`Init 3️⃣: Generated new AT: ${newAccessToken}`);
 
             const { extractedUsername, extractedUserId } = await decodeJwt(
@@ -220,6 +248,7 @@ export const AuthProvider = ({ children }) => {
       credLoadFinished,
       loginStatusChanged,
       login,
+      register,
       logout,
     }),
     [
@@ -229,6 +258,7 @@ export const AuthProvider = ({ children }) => {
       credLoadFinished,
       loginStatusChanged,
       login,
+      register,
       logout,
     ]
   );

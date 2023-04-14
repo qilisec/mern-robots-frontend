@@ -2,7 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Scroll = ({ children }) => (
-  <div style={{ overflowY: 'scroll', border: '1px solid black' }}>
+  <div
+    style={{
+      overflowY: 'auto',
+      border: '1px solid black',
+      maxHeight: '1000px',
+    }}
+  >
     {children}
   </div>
 );

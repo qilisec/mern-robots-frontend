@@ -23,6 +23,16 @@ export function Profile({ history }) {
     setParamUserId(userId);
   }
 
+  const parsedRoles = () => {
+    let profileRoleString = ``;
+    if (profileRole != []) {
+      profileRoleString = profileRole.reduce(
+        (outputString, role) => `${outputString}, ${role}`
+      );
+      return profileRoleString;
+    }
+  };
+
   useEffect(() => {
     const retrieveProfileData = async (requestedUserId) => {
       try {
@@ -56,20 +66,25 @@ export function Profile({ history }) {
     logout();
     navigate('/');
   };
-  // if (!credLoadFinished) {
-  //   return <h1>Loading</h1>;
-  // }
+  if (!credLoadFinished) {
+    return <h1>Loading</h1>;
+  }
   return (
-    <div className="ma2">
-      <br />
-      Welcome {currentAuthUsername}
+    <div className="text-white font-ultralight my-2.5 text-center">
+      <h1 className=" text-3xl  text-white font-medium">
+        Welcome {currentAuthUsername}
+      </h1>
       <br />
       Email: {profileEmail}
       <br />
-      Role: {profileRole}
+      Role: {parsedRoles()}
       <br />
       <br />
-      <button className="" type="button" onClick={() => handleLogout(auth)}>
+      <button
+        className="bg-pink-500 px-6 py-3 rounded"
+        type="button"
+        onClick={() => handleLogout(auth)}
+      >
         Logout
       </button>
     </div>

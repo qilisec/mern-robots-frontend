@@ -21,6 +21,7 @@ export const getAllRobots = () =>
 export const createRobot = (payload) => {
   try {
     return api.post(`/robot`, payload, {
+      secure: true,
       headers: { 'current-function': 'createRobot' },
     });
   } catch (err) {
@@ -32,6 +33,7 @@ export const getRobotById = (id) => {
   if (id) {
     console.log(`getRobotById: Don't avoid, robotId is ${id}`);
     return api.get(`/robot/${id}`, {
+      secure: true,
       headers: { 'current-function': 'getRobotById' },
     });
   }
@@ -40,12 +42,19 @@ export const getRobotById = (id) => {
 };
 
 export const updateRobotById = (id, payload) =>
-  api.put(`/robot/${id}`, payload);
+  api.put(`/robot/${id}`, payload, {
+    secure: true,
+    'current-function': 'updateRobotById',
+  });
 
-export const deleteRobotById = (id) => api.delete(`/Robot/${id}`);
+export const deleteRobotById = (id) =>
+  api.delete(`/Robot/${id}`, '', {
+    secure: true,
+    'current-function': 'deleteRobotById',
+  });
 
 // API Routes - User Signin and Registration
-// Was having issues here once I added console log. This is because signle line arrow fn means implicit return. Downstream functions depend on a value being returned
+// Was having issues here once I added console log. This is because single line arrow fn means implicit return. Downstream functions depend on a value being returned
 
 export const authenticateSignIn = async (payload, res) => {
   const signinResult = await api.post(`/authentication/signin`, payload, {
@@ -53,21 +62,25 @@ export const authenticateSignIn = async (payload, res) => {
     secure: true,
     headers: { 'current-function': 'authenticateSignin' },
   });
-
+  // console.log(`authSignin`, signinResult.data);
   // No way to tell if the RT cookie was obtained. Only way to do so is to attempt to pass it to the backend
   return signinResult;
 };
 
-export const authenticateSignUp = (payload) =>
-  api.post(`/authentication/signup`, payload, {
-    secure: true,
-    headers: {
-      singleHeader: 'Hello1',
-      'Content-Type': 'application/json',
-      'X-Custom-Header': 'mern-Robots authSignup',
-    },
-  });
-// api.post(`/authentication/signup`, payload, {secure: true, headers: {"singleHeader": 'Hello1'}});
+export const authenticateSignUp = async (payload) => {
+  console.log(`API: authSignup invoked`);
+  try {
+    const signupResult = await api.post(`/authentication/signup`, payload, {
+      secure: true,
+      headers: {
+        'current-function': 'authSignup',
+      },
+    });
+    return signupResult;
+  } catch (err) {
+    console.log(`authenticateSignUp: error`, err);
+  }
+};
 
 export const testUser = (payload) => api.get(`/test/user`, payload);
 
@@ -80,8 +93,6 @@ const apis = {
   getRobotById,
   authenticateSignIn,
   authenticateSignUp,
-  // getRefreshToken,
-  // refreshAccessToken,
 };
 
 export default apis;

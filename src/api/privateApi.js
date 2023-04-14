@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+const { log } = console;
 export const ip =
   process.env.REACT_APP_HOST === 'local'
     ? 'localhost'
@@ -32,7 +33,6 @@ export const getRefreshToken = async () => {
     withCredentials: true,
     secure: true,
     headers: {
-      'X-Custom-Header': 'mern-Robots getRefreshToken',
       'current-function': 'getRefreshToken',
     },
   });
@@ -41,16 +41,33 @@ export const getRefreshToken = async () => {
   return rtkn;
 };
 
-export const getNewAccessToken = async (refreshTokenData) => {
-  if (refreshTokenData) {
-    const payload = { refreshToken: refreshTokenData };
-    const check = await privateApi.put(`/authentication/refresh`, payload, {
+// export const getNewAccessToken = async (refreshTokenData) => {
+//   log(`getNewAccessToken invoked`);
+//   if (refreshTokenData) {
+//     const payload = { refreshToken: refreshTokenData };
+//     const check = await privateApi.put(`/authentication/refresh`, payload, {
+//       withCredentials: true,
+//       secure: true,
+//       headers: { 'current-function': 'refreshAccessToken' },
+//     });
+//     const { newAccessToken } = check.data;
+//     log(`getNewAccessToken finished; accessToken`, newAccessToken);
+//     return newAccessToken;
+//   }
+// };
+export const getNewAccessToken = async () => {
+  log(`getNewAccessToken invoked`);
+  try {
+    // const payload = { refreshToken: refreshTokenData };
+    const check = await privateApi.put(`/authentication/refresh`, '', {
       withCredentials: true,
       secure: true,
       headers: { 'current-function': 'refreshAccessToken' },
     });
     const { newAccessToken } = check.data;
     return newAccessToken;
+  } catch (err) {
+    log(`getNewAccessToken err`, err);
   }
 };
 

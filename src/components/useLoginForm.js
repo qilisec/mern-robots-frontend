@@ -10,3 +10,16 @@ export const useLoginForm = (initialInput) => {
     },
   ];
 };
+
+export const useRegisterForm = (initialInput) => {
+  const [registerInput, setRegisterInput] = useState({ initialInput });
+
+  return [
+    registerInput,
+    (e) => {
+      setRegisterInput({ ...registerInput, [e.target.name]: e.target.value });
+    },
+  ];
+};
+
+export default { useLoginForm, useRegisterForm };
