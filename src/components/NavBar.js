@@ -18,9 +18,9 @@ export default function NavBar() {
   // const { actions, state } = useStateMachine({ updateAction });
 
   const toggleFormStatus = useFormStore((state) => state.toggleFormStatus);
-  // const resetForm = useFormStore((state) => state.resetForm);
+  const resetForm = useFormStore((state) => state.resetForm);
   // Below: Wrong, use set to change state
-  const resetForm = useFormStore((state) => (state.page = 1));
+  // const resetForm = useFormStore((state) => (state.page = 1));
 
   const loginStatus =
     auth && auth.currentAuthUser ? auth.currentAuthUser : null;

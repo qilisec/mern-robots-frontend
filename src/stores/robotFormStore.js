@@ -55,25 +55,36 @@ const {
 } = robotFormDefaults;
 
 const useFormStore = create((set, get) => ({
+  lastError: '',
+  logLastError: (message) => set((state) => ({ lastError: message })),
   page: 0,
   launchedForm: false,
-  // robotFormBasic,
-  // robotFormAppearance,
-  // robotFormLocation,
-  // robotFormFinancial,
-  // robotFormMisc,
-  // robotFormToc,
-  ...robotFormDefaults,
+  robotFormBasic,
+  robotFormAppearance,
+  robotFormLocation,
+  robotFormFinancial,
+  robotFormMisc,
+  robotFormToc,
+  // ...robotFormDefaults,
   toggleFormStatus: (status) => set(() => ({ launchedForm: status })),
+  resetForm: () => set((state) => ({ page: (state.page = 0) })),
   prevPage: (data) => {
-    // console.log(`zustand: prevPage`);
-    set((state) => ({ ...data, page: state.page - 1 }));
+    console.log(`zustand: prevPage`, data);
+    return set((state) => ({ ...data, page: state.page - 1 }));
   },
   nextPage: (data) => {
-    // console.log(`zustand: nextPage`);
-    set((state) => ({ ...data, page: state.page + 1 }));
+    console.log(`zustand: nextPage`, data);
+    return set((state) => ({ ...data, page: state.page + 1 }));
   },
-  // onSubmit: (data) => set({ ...data, page: 5 }),
+  updateForm: (data) => {
+    console.log(`zustand: updateForm`, data);
+    return set(() => ({ ...data }));
+  },
+  // onSubmit: (data) => {
+  //   console.log(`zustand: onSubmit`, data);
+  //   return set(() => ({ ...data, page: 5 }));
+  // },
+  // Not sure if this immer implementation is correct
   onSubmit: (data) => {
     console.table(`onSubmit: outer:`, data);
     return set(
@@ -85,30 +96,22 @@ const useFormStore = create((set, get) => ({
       })
     );
   },
-  // onsubmit: (data) => {
-  //   console.log(`data`, data);
-  //   set(
-  //     produce((draft) => {
-  //       console.table(`onSubmit:`, draft, data);
-  //       for (const input in data) {
-  //         draft.input = data.input;
-  //       }
-  //       draft.page = 4;
-  //     })
-  //   );
-  // },
-
-  //   return {...data, draft.page: 5 }
-  //    ))),
   readFormToc: (formName, currentPage) => {
     try {
+      console.count(`readFormToc invoked`);
       return get()[`${formName}Toc`][currentPage];
     } catch (err) {
       return err;
     }
   },
-  readFormCategory: (formName, tocName) => get()[`${formName}${tocName}`],
-  readFormCategoryValue: (category, key) => category[key],
+  readFormCategory: (formName, tocName) => {
+    console.count(`readFormCategory invoked`);
+    return get()[`${formName}${tocName}`];
+  },
+  readFormCategoryValue: (category, key) => {
+    console.count(`readFormCategoryValue invoked`);
+    return category[key];
+  },
 }));
 
 export default useFormStore;

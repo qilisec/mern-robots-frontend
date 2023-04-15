@@ -23,6 +23,7 @@ const Result = (props) => {
     console.log(`property:`, property);
     const categoryBlock = readFormCategory(form, property);
     console.log('categoryBlock', categoryBlock);
+    console.groupEnd();
     return categoryBlock;
   });
   // const prevPage = (data) => {

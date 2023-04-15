@@ -18,16 +18,20 @@ function Form() {
     state.launchedForm,
     state.toggleFormStatus,
   ]);
-  const prevPage = useFormStore((state) => {
-    console.log(`prevPage invoked: ${state.page}:`);
-    return state.prevPage;
-  });
-  const nextPage = useFormStore((state) => {
-    console.log(`nextPage invoked: ${state.page}`);
-    return state.nextPage;
-  });
+
+  // Bug: +Log, -Return state... = onValid is not a function
+  const prevPage = useFormStore(
+    (state) =>
+      // console.log(`prevPage invoked: ${state.page}:`);
+      state.prevPage
+  );
+  const nextPage = useFormStore(
+    (state) =>
+      // console.log(`nextPage invoked: ${state.page}`);
+      state.nextPage
+  );
   const onSubmit = useFormStore((state) => state.onSubmit);
-  const formNavigation = { prevPage, nextPage, onSubmit };
+
   const form = 'robotForm';
   const formStyle = 'create-robot-form';
   const formToc = useFormStore((state) => state[`${form}Toc`]);
@@ -61,6 +65,9 @@ function Form() {
   //   actions.updateAction(data);
   // };
 
+  // const updateForm = (data) => onSubmit(data);
+  const formNavigation = { prevPage, nextPage, onSubmit };
+  // const formNavigation = { prevPage, nextPage, updateForm };
   // console.log(
   //   `CreateRobotForm: formToc; formToc.length`,
   //   formToc,
