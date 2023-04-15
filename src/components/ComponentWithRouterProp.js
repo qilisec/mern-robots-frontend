@@ -5,7 +5,8 @@ export default function withRouter(Component) {
     const location = useLocation();
     const navigate = useNavigate();
     const params = useParams();
-    return <Component props={props} router={{ location, navigate, params }} />;
+    const router = { location, navigate, params };
+    return <Component {...props} router={router} />;
   }
 
   return ComponentWithRouterProp;

@@ -6,7 +6,7 @@ import { useStateMachine } from 'little-state-machine';
 import RobotHome from './RobotHome';
 import About from '../components/About.js';
 import RobotInfo from '../components/RobotInfo.js';
-import { AuthProvider } from '../components/auth';
+import { AuthProvider, useAuth } from '../components/auth';
 import NavBar from '../components/NavBar';
 import { Login } from '../components/Login';
 import { Register } from '../components/Register';
@@ -27,13 +27,15 @@ import updateAction from '../updateAction';
 
 const { log } = console;
 function App() {
+  console.count('counter - App');
   const { actions, state } = useStateMachine({ updateAction });
   const [searchfield, setSearchfield] = useState('');
-  const [count, setCount] = useState(5);
+  const [count, setCount] = useState(2);
   const [robots, setRobots] = useState([]);
   const [source, setSource] = useState('');
+  const auth = useAuth();
   // console.log(`Render`);
-  console.log(`App little-state-machine: initial State:`, state);
+  // console.log(`App little-state-machine: initial State:`, state);
 
   const getRobotSourceAndFetch = async () => {
     try {

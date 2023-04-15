@@ -6,27 +6,37 @@ import {
   reseedUsers,
   deleteSeedUsers,
   deleteSeedRobots,
+  initialSeedUsers,
 } from '../api/reseedUsers';
 import updateAction from '../updateAction';
 import { robotFormDefault } from '..';
+import useFormStore from '../stores/robotFormStore';
 
 export default function NavBar() {
   const auth = useAuth();
   const navigate = useNavigate();
-  const { actions, state } = useStateMachine({ updateAction });
+  // const { actions, state } = useStateMachine({ updateAction });
+
+  const toggleFormStatus = useFormStore((state) => state.toggleFormStatus);
+  // const resetForm = useFormStore((state) => state.resetForm);
+  // Below: Wrong, use set to change state
+  const resetForm = useFormStore((state) => (state.page = 1));
+
   const loginStatus =
     auth && auth.currentAuthUser ? auth.currentAuthUser : null;
 
   const handleGoHome = () => {
     console.log(`invoked HandleGoHome; wiping history`);
-    actions.updateAction({ launchedForm: false });
+    resetForm();
+    toggleFormStatus(false);
+    // actions.updateAction({ launchedForm: false });
     // navigate('/');
   };
 
-  const resetRobotFormState = () => {
-    actions.updateAction({ ...robotFormDefault });
-    console.log(`resetRobotFormStore`, state);
-  };
+  // const resetRobotFormState = () => {
+  //   actions.updateAction({ ...robotFormDefault });
+  //   console.log(`resetRobotFormStore`, state);
+  // };
 
   return (
     <nav>
@@ -97,9 +107,14 @@ export default function NavBar() {
       <span className="NavBar-Link">
         <NavLink to="/robot">Create Robot</NavLink>
       </span>
-      <span className="NavBar-Link">
+      {/* <span className="NavBar-Link">
         <NavLink onClick={() => resetRobotFormState()} to="/">
           Reset RobotForm Store
+        </NavLink>
+      </span> */}
+      <span className="NavBar-Link">
+        <NavLink onClick={() => initialSeedUsers(auth.currentAuthUser)} to="/">
+          Initialize User DB
         </NavLink>
       </span>
     </nav>

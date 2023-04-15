@@ -17,6 +17,22 @@ export const reseedUsers = async (queryUserId) => {
   }
 };
 
+export const initialSeedUsers = async (queryUserId) => {
+  console.log(`API: initialSeedUsers invoked`);
+  const payload = { userId: queryUserId };
+  try {
+    const result = await api.post('/initial', payload, {
+      secure: true,
+      headers: { 'current-function': 'initialSeedUsers' },
+    });
+    console.log(`initialSeedUsers finished: result.data:`, result.data);
+    return result;
+  } catch (err) {
+    console.log(`API: initialSeedUsers failed: ${err}`);
+    return err;
+  }
+};
+
 export const deleteSeedUsers = async (queryUserId) => {
   console.log(`privateAPI: DeleteSeedUsers invoked`);
   const deletePayload = { data: { userId: queryUserId } };
@@ -53,4 +69,9 @@ export const deleteSeedRobots = async (queryUserId) => {
   return requestDelete;
 };
 
-export default { reseedUsers, deleteSeedUsers, deleteSeedRobots };
+export default {
+  reseedUsers,
+  deleteSeedUsers,
+  deleteSeedRobots,
+  initialSeedUsers,
+};

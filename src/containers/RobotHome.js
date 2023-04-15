@@ -12,6 +12,8 @@ export default function RobotHome({
   searchfield,
   setSearchfield,
 }) {
+  // console.group('RobotHome');
+  console.count('counter - RobotHome');
   const auth = useAuth();
   const currentUsername =
     auth && auth.currentAuthUsername ? auth.currentAuthUsername : null;
@@ -31,6 +33,7 @@ export default function RobotHome({
     );
     return <h1>Loading</h1>;
   }
+  // console.groupEnd();
   return (
     <div className="text-center my-2.5">
       <h1 className="text-white text-3xl font-bold pb-3 border-b">
