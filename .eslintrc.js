@@ -8,6 +8,7 @@ module.exports = {
   rules: {
     'react/prop-types': 1,
     'no-unused-vars': 0,
+    'arrow-body-style': 0,
     'import/no-extraneous-dependencies': [
       'warn',
       // {

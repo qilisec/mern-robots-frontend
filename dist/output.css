@@ -700,6 +700,26 @@ video {
   width: 100%;
 }
 
+.w-\[240px\] {
+  width: 240px;
+}
+
+.w-\[250px\] {
+  width: 250px;
+}
+
+.w-\[260px\] {
+  width: 260px;
+}
+
+.w-\[265px\] {
+  width: 265px;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
 .max-w-\[600px\] {
   max-width: 600px;
 }

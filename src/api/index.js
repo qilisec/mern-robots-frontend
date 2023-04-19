@@ -1,7 +1,7 @@
 import axios from 'axios';
 // import { Navigate } from 'react-router-dom';
 
-// REACT_APP_HOST is determined by the npm run script used
+// NOTE: REACT_APP_HOST is determined by the npm run script used (start:local or start:remote)
 export const ip =
   process.env.REACT_APP_HOST === 'local'
     ? 'localhost'
@@ -16,7 +16,9 @@ export const api = axios.create({
 
 // API Routes - User Signin and Registration
 export const getAllRobots = () =>
-  api.get(`/getrobotlist`, { headers: { 'current-function': 'getAllRobots' } });
+  api
+    .get(`/getrobotlist`, { headers: { 'current-function': 'getAllRobots' } })
+    .then((data) => data.data);
 
 export const createRobot = (payload) => {
   try {
@@ -54,7 +56,7 @@ export const deleteRobotById = (id) =>
   });
 
 // API Routes - User Signin and Registration
-// Was having issues here once I added console log. This is because single line arrow fn means implicit return. Downstream functions depend on a value being returned
+// REVIEW: Was having issues here once I added console log. This is because single line arrow fn means implicit return. Downstream functions depend on a value being returned
 
 export const authenticateSignIn = async (payload, res) => {
   const signinResult = await api.post(`/authentication/signin`, payload, {
@@ -63,7 +65,7 @@ export const authenticateSignIn = async (payload, res) => {
     headers: { 'current-function': 'authenticateSignin' },
   });
   // console.log(`authSignin`, signinResult.data);
-  // No way to tell if the RT cookie was obtained. Only way to do so is to attempt to pass it to the backend
+  // NOTE: No way to tell if the RT cookie was obtained. Only way to do so is to attempt to pass it to the backend
   return signinResult;
 };
 

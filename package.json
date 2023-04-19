@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mantine/core": "^6.0.6",
-    "@mantine/hooks": "^6.0.6",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -21,6 +19,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
     "react-jwt": "^1.1.8",
+    "react-query": "^3.39.3",
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
     "tachyons": "^4.12.0",

@@ -1,19 +1,32 @@
 import { useForm } from 'react-hook-form';
-import { useStateMachine } from 'little-state-machine';
-import produce from 'immer';
-import updateAction from '../../updateAction';
+import PropTypes from 'prop-types';
+// import { useStateMachine } from 'little-state-machine';
+// import produce from 'immer';
+// import updateAction from '../../updateAction';
 import useFormStore from '../../stores/robotFormStore';
 
 const Result = (props) => {
-  // const { actions, state } = useStateMachine({ updateAction });
+  /*
+  Little-state-machine implementation
+    // const { actions, state } = useStateMachine({ updateAction });
+    // const getState = useFormStore((state) => state);
+    // const page = useFormStore((state) => state.page);
+    // console.log(`result`, state);
+    // const prevPage = (data) => {
+    //   data.page = state.page - 1;
+    //   actions.updateAction(data);
+    // };
+    // const nextPage = (data) => {
+    //   data.page = state.page + 1;
+    //   actions.updateAction(data);
+    // };
+  */
+
   const { handleSubmit } = useForm();
-  // console.log(`result`, state);
   console.group(`Result`);
   const { form, formNavigation } = props;
   const { prevPage } = formNavigation;
 
-  // const getState = useFormStore((state) => state);
-  // const page = useFormStore((state) => state.page);
   const readFormCategory = useFormStore((state) => state.readFormCategory);
   const formToc = useFormStore((state) => state[`${form}Toc`]);
   console.log(`formToc: ${formToc}`);
@@ -26,20 +39,12 @@ const Result = (props) => {
     console.groupEnd();
     return categoryBlock;
   });
-  // const prevPage = (data) => {
-  //   data.page = state.page - 1;
-  //   actions.updateAction(data);
-  // };
-  // const nextPage = (data) => {
-  //   data.page = state.page + 1;
-  //   actions.updateAction(data);
-  // };
+
   console.groupEnd();
   return (
     <div className="mb-2 create-robot-form">
       <h2 className="create-robot-form">Result:</h2>
       <pre className="text-primary">
-        {/* {JSON.stringify(state, null, 2) */}
         {JSON.stringify(output, null, 2)
           .slice(1, -1)
           .replace(/[{}"],?/g, '')}
@@ -58,3 +63,9 @@ const Result = (props) => {
 };
 
 export default Result;
+
+Result.propTypes = {
+  form: PropTypes.string,
+  formNavigation: PropTypes.object,
+  prevPage: PropTypes.func,
+};
