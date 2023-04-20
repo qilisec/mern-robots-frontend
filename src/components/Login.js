@@ -1,18 +1,23 @@
 // import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { useAuth } from './auth';
 import { useLoginForm } from './useLoginForm';
 
 export function Login() {
-  const [loginInput, setLoginInput] = useLoginForm({
-    usernameInput: '',
-    passwordInput: '',
-  });
+  // const [loginInput, setLoginInput] = useLoginForm({
+  //   usernameInput: '',
+  //   passwordInput: '',
+  // });
   const auth = useAuth();
   const navigate = useNavigate();
+  const { register, getValues } = useForm();
 
   const handleLogin = async () => {
-    await auth.login(loginInput.usernameInput, loginInput.passwordInput);
+    // await auth.login(loginInput.usernameInput, loginInput.passwordInput);
+    const { usernameInput, passwordInput } = getValues();
+    await auth.login(usernameInput, passwordInput);
+
     navigate('/');
   };
 
@@ -23,21 +28,19 @@ export function Login() {
         Username:{' '}
         <input
           className="text-black inline-block box-border w-full border rounded border-white px-3.5 py-2.5 mb-2.5 text-lg"
-          type="text"
-          name="usernameInput"
-          onChange={setLoginInput}
+          key="usernameInput"
+          {...register('usernameInput')}
+          defaultValue=""
         />
-        {/* <input type="text" onChange={(e) => useLoginForm(e.target.value)} /> */}
       </label>
       <label className="leading-loose text-left block mb-3.5 mt-5 text-white text-sm font-extralight">
         Password:{' '}
         <input
           className="text-black inline-block box-border w-full border rounded border-white px-3.5 py-2.5 mb-2.5 text-lg"
           type="password"
-          name="passwordInput"
-          onChange={setLoginInput}
+          {...register('passwordInput')}
+          defaultValue=""
         />
-        {/* <input type="text" onChange={(e) => setPassword(e.target.value)} /> */}
         <button
           className="inline-block w-full p-5 mt-10 text-base font-thin tracking-wide text-white uppercase bg-pink-500 border-none rounded appearance-none"
           type="submit"
