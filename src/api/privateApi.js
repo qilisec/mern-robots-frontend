@@ -65,6 +65,10 @@ export const getNewAccessToken = async () => {
       headers: { 'current-function': 'refreshAccessToken' },
     });
     const { newAccessToken } = check.data;
+    log(
+      `getNewAccessToken finished: newAccessToken: `,
+      newAccessToken?.slice(-8)
+    );
     return newAccessToken;
   } catch (err) {
     log(`getNewAccessToken err`, err);

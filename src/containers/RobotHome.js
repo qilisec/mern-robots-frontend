@@ -1,11 +1,13 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useQueryClient, useQuery, useMutation } from 'react-query';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
-import ErrorBoundary from '../components/ErrorBoundary';
+// import ErrorBoundary from '../components/ErrorBoundary';
 import { useAuth } from '../components/auth';
+// import { useAuth } from '../components/auth.last.working';
 import { createRobot, getRobotById, getAllRobots } from '../api/index.js';
 
 export default function RobotHome(props) {
@@ -16,8 +18,9 @@ export default function RobotHome(props) {
   // console.group('RobotHome');
   console.count('counter - RobotHome');
   const auth = useAuth();
-  const currentUsername =
-    auth && auth.currentAuthUsername ? auth.currentAuthUsername : null;
+  const { accessToken, username } = auth.currentUser;
+  const currentUsername = auth && username ? username : null;
+  // auth && auth.currentAuthUsername ? auth.currentAuthUsername : null;
 
   const dbQuery = useQuery({
     queryKey: ['robots-db'],
@@ -67,7 +70,6 @@ export default function RobotHome(props) {
         console.log(err);
       }
     }
-    // }, [fetchData, fetchError]);
   }, [dbData, fetchData, dbErr, fetchErr]);
 
   async function getRobotsFromFetchQuery() {
@@ -84,7 +86,7 @@ export default function RobotHome(props) {
         createRobot(robot);
         return false;
       }
-      console.log(`addRobotToDb: Already found ${robot._id?.slice(-10)}`);
+      console.log(`addRobotToDb: Already found ${robot._id?.slice(-8)}`);
       return true;
     } catch (err) {
       console.log(`addRobotsToDb: Error creating new robot: ${err}`);
@@ -115,17 +117,16 @@ export default function RobotHome(props) {
       <h2 className="text-white text-white-font-extralight">
         Showing {count} Robots
       </h2>
-      {/* <h2>Credentials Found? {auth.credentialsFound.toString()}</h2> */}
       {currentUsername && (
         <div>
           <h2 className="text-white text-white-font-extralight mx-32">
-            Hello {auth.currentAuthUsername}. Your access token is:
+            {/* Hello {auth.currentAuthUsername}. Your access token is: */}
+            Hello {username}. Your access token is:
           </h2>
           <h2 className="text-white text-white-font-extralight mx-32">
-            {/* <h2 className="overflow-scroll dib-m mh6"> */}
-            ...{auth.currentAuthUser.slice(-10)}
+            ...{accessToken.slice(-8)}
+            {/* ...{auth.currentAuthUser.slice(-10)} */}
           </h2>
-          {/* <h2>Your refreshToken is {auth.currentRefreshToken}</h2> */}
         </div>
       )}
       <button
@@ -144,9 +145,9 @@ export default function RobotHome(props) {
       </button>
       <SearchBox searchChange={onSearchChange} />
       <Scroll>
-        <ErrorBoundary>
-          <CardList robots={filteredRobots} count={count} />
-        </ErrorBoundary>
+        {/* <ErrorBoundary> */}
+        <CardList robots={filteredRobots} count={count} />
+        {/* </ErrorBoundary> */}
       </Scroll>
     </div>
   );

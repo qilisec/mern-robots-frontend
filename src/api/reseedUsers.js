@@ -55,7 +55,7 @@ export const deleteSeedUsers = async (queryUserId) => {
 export const deleteSeedRobots = async (queryUserId) => {
   console.log(
     `privateAPI: deleteSeedRobots invoked; queryUserId:`,
-    queryUserId?.slice(-5)
+    queryUserId?.slice(-8)
   );
   // payload for delete methods must use "data" as the key
   const deletePayload = { data: { userId: queryUserId } };

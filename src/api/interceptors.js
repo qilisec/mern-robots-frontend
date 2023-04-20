@@ -2,7 +2,10 @@ import axios from 'axios';
 // import { getRefreshToken } from './privateApi';
 
 export const addReqIntercept = (client, userAccessToken) => {
-  console.log(`🚀 added req interceptor 1️⃣: ${userAccessToken?.slice(-5)} 🚀`);
+  console.log(
+    `🚀 ATTACHED Request Interceptor: 🚀`,
+    userAccessToken?.slice(-8)
+  );
   const reqInterceptor = client.interceptors.request;
 
   reqInterceptor.clear();
@@ -12,7 +15,7 @@ export const addReqIntercept = (client, userAccessToken) => {
     // config.headers['Access-Control-Expose-Headers'] = 'Authorization';
     // config.headers.testing = `This is a req interceptor test`;
     console.log(
-      `😸 pApi ReqIntercept : Added Header: 😸\n${userAccessToken.slice(-5)}`
+      `😸 pApi ReqIntercept : Added Header: 😸\n${userAccessToken.slice(-8)}`
     );
 
     return config;
@@ -23,22 +26,21 @@ export const addResIntercept = async (client) => {
   // I feel like I'm re-adding the res interceptor too frequentyle. I should really only add it once per rtkn cookie. The uses should be as follows:
   // If just logged in, add res interceptor
   // if refresh token just expired and was reissued, add res interceptor
-  console.log(`🔱 START: Added res interceptor 1️⃣:🔱`);
+  console.log(`🔱 ATTACHED RES INTERCEPTOR 1️⃣:🔱`);
   const resInterceptor = client.interceptors.response;
   // resInterceptor.clear();
   resInterceptor.use(async (interceptedRes) => {
-    console.log(`For undefined res, is res interceptor invoked?`);
     try {
       // console.log(`⚔️addResIntercept invoked: Success⚔️`);
       // console.log('\nIntercepted Response:');
       // console.dir({ interceptedRes });
-      console.table(`⚔️ Response intercepted Success ⚔️`, { interceptedRes });
+      // console.table(`⚔️ Response intercepted Success ⚔️`, { interceptedRes });
       return interceptedRes;
     } catch (err) {
       // console.log(`⚔️addResIntercept invoked: Error⚔️: ${err}`);
       // console.log('interceptedRes:');
       // console.dir({ interceptedRes });
-      console.table(`⚔️ Response intercepted Error ⚔️`, { err });
+      // console.table(`⚔️ Response intercepted Error ⚔️`, { err });
       const resErrorCode = err.interceptedRes.status;
       if (resErrorCode === (401 || 403)) {
         console.log(
