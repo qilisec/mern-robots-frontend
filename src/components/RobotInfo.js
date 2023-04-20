@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-function useIsMounted() {
+function useIsMounted(props) {
   const isMounted = useRef(false);
   useEffect(() => {
     isMounted.current = true;
@@ -38,6 +38,23 @@ export default function RobotInfo({ robots }) {
     };
     getRobotInfo();
   }, [robots.length > 0]);
+  // useEffect(() => {
+  //   const getRobotInfo = async () => {
+  //     const matchingRobot = await robots.find(
+  //       (robot) => Number(robot.robotId) === Number(id)
+  //     );
+  //     try {
+  //       console.log(`matchingRobot is ${matchingRobot.robotId}`);
+  //       setCurrentRobot(matchingRobot);
+  //       setIsLoading(false);
+  //       return matchingRobot;
+  //     } catch (err) {
+  //       console.log(`error in getRobotInfo: ${err}`);
+  //       return err;
+  //     }
+  //   };
+  //   getRobotInfo();
+  // }, [robots.length > 0]);
 
   const render = () => {
     if (isLoading) {

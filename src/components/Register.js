@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from './auth';
 import { useRegisterForm } from './useLoginForm';
 
-export function Register() {
+function Register() {
   // const [user, setUser] = useState('');
   // const [password, setPassword] = useState('');
   // const [registerInput, setRegisterInput] = useRegisterForm({
@@ -79,4 +79,4 @@ export function Register() {
   );
 }
 
-export default { Register };
+export default Register;

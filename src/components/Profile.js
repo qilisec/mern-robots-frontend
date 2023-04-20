@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from './auth';
 import { getProfilePage } from '../api/privateApi';
 
-export function Profile({ history }) {
+export function Profile(props) {
+  const { history } = props;
   const auth = useAuth();
   const {
     credLoadFinished,
@@ -90,3 +91,5 @@ export function Profile({ history }) {
     </div>
   );
 }
+
+export default Profile;
