@@ -7,7 +7,7 @@ export const ip =
     ? 'localhost'
     : process.env.REACT_APP_WEB_APP_DB_PUBLIC_IP;
 
-console.log(`Host is '${process.env.REACT_APP_HOST}'; IP set to ${ip}`);
+// console.log(`Host is '${process.env.REACT_APP_HOST}'; IP set to ${ip}`);
 
 export const api = axios.create({
   baseURL: `https://${ip}:3000/api`,

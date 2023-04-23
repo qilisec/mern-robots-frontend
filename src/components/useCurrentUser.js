@@ -6,17 +6,20 @@ export const useCurrentUser = (initialInput) => {
   return [
     currentUser,
     (userCredentials) => {
-      setCurrentUser((prevUserState) => ({ ...prevUserState, ...userCredentials }));
+      setCurrentUser((prevUserState) => ({
+        ...prevUserState,
+        ...userCredentials,
+      }));
     },
   ];
 };
 
 export const useCurrentUserDefaults = {
-    accessToken: null,
-    username: null,
-    userId: null,
-    isLoading: true,
-    status: null,
-}
+  accessToken: null,
+  username: null,
+  userId: null,
+  isLoading: true,
+  status: null,
+};
 
-export default {useCurrentUser, useCurrentUserDefaults}
+export default { useCurrentUser, useCurrentUserDefaults };

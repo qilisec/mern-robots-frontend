@@ -1,5 +1,8 @@
+/* eslint-disable operator-assignment */
 import { create } from 'zustand';
-import produce from 'immer';
+import { produce, setAutoFreeze } from 'immer';
+
+setAutoFreeze(false);
 
 const formDefaults = {
   robotFormDefaults: {
@@ -33,7 +36,7 @@ const formDefaults = {
       cardExpire: '06/22',
       cardNumber: '3565600124206309',
       cardType: 'jcb',
-      currentcy: 'Krona',
+      currency: 'Krona',
       iban: 'FR19 2200 9407 28AH Q2CV AT31 S49',
     },
     robotFormMisc: {
@@ -43,7 +46,13 @@ const formDefaults = {
         'Mozilla/5.0 (Windows; U; Windows NT 6.0; ja-JP) AppleWebKit/533.16 (KHTML, like Gecko) Version/5.0 Safari/533.16',
       domain: 'odnoklassniki.ru',
     },
-    robotFormToc: ['Basic', 'Appearance', 'Location', 'Financial', 'Misc'],
+    robotFormToc: [
+      'robotFormBasic',
+      'robotFormAppearance',
+      'robotFormLocation',
+      'robotFormFinancial',
+      'robotFormMisc',
+    ],
   },
 };
 
@@ -60,15 +69,16 @@ const useFormStore = create((set, get) => ({
   lastError: '',
   logLastError: (message) => set((state) => ({ lastError: message })),
   page: 0,
+  formSubmission: {},
   formInputPrefill: null,
   launchedForm: false,
-  robotFormBasic,
-  robotFormAppearance,
-  robotFormLocation,
-  robotFormFinancial,
-  robotFormMisc,
-  robotFormToc,
-  // ...robotFormDefaults,
+  // robotFormBasic,
+  // robotFormAppearance,
+  // robotFormLocation,
+  // robotFormFinancial,
+  // robotFormMisc,
+  // robotFormToc,
+  ...formDefaults.robotFormDefaults,
   toggleFormStatus: (status) => set(() => ({ launchedForm: status })),
   resetForm: () => set((state) => ({ page: (state.page = 0) })),
   toggleFormInputFill: (formType) => {
@@ -101,46 +111,71 @@ const useFormStore = create((set, get) => ({
   prevPage: (data) => {
     // console.log(`zustand: prevPage`, data);
     return set((state) => ({ ...data, page: state.page - 1 }));
+    // ALERT: When next/prev page used immer code, the form component crashed if user clicked next page > prev page. Error was "Cannot assign to read only property". Had to set immer "autofreeze" setting to false.
+    // set(
+    //   produce((draft) => {
+    //     Object.keys(data).map((field) => {
+    //       const fieldValue = data[field];
+    //       return (draft[field] = fieldValue);
+    //     });
+    //     draft.page = draft.page - 1;
+    //   })
+    // );
   },
   nextPage: (data) => {
-    console.log(`zustand: nextPage`, data);
+    // console.log(`zustand: nextPage`, data);
     return set((state) => ({ ...data, page: state.page + 1 }));
+    // set(
+    //   produce((draft) => {
+    //     Object.keys(data).map((field) => {
+    //       const fieldValue = data[field];
+    //       return (draft[field] = fieldValue);
+    //     });
+    //     draft.page += 1;
+    //   })
+    // );
   },
   updateForm: (data) => {
     console.log(`zustand: updateForm`, data);
     return set(() => ({ ...data }));
   },
-  // onSubmit: (data) => {
-  //   console.log(`zustand: onSubmit`, data);
-  //   return set(() => ({ ...data, page: 5 }));
-  // },
-  // Not sure if this immer implementation is correct
-  onSubmit: (data) => {
-    console.table(`onSubmit: outer:`, data);
-    return set(
+  onSubmit: (data, formName) => {
+    const formToc = get()[`${formName}Toc`];
+    set(
       produce((draft) => {
-        console.table(`onSubmit: inner:`, draft, data);
-        const newDraft = { ...draft, ...data };
-        newDraft.page = 5;
-        return newDraft;
+        formToc.map((category) => {
+          const categoryInfo = get().readFormCategory(category);
+          return Object.keys(categoryInfo).map((field) => {
+            const fieldValue = data[category]
+              ? data[category][field]
+              : categoryInfo[field];
+            // NOTE: Can't use .field because that returns static "field" property: {"field": fieldValue}
+            // draft.formSubmission.field = fieldValue;
+            draft.formSubmission[field] = fieldValue;
+            draft[category][field] = fieldValue;
+            return draft;
+          });
+        });
+        draft.page = 5;
       })
     );
   },
   readFormToc: (formName, currentPage) => {
     try {
-      console.count(`readFormToc invoked`);
+      // console.count(`readFormToc invoked`);
       return get()[`${formName}Toc`][currentPage];
     } catch (err) {
       return err;
     }
   },
-  readFormCategory: (formName, tocName) => {
-    console.count(`readFormCategory invoked`);
-    return get()[`${formName}${tocName}`];
+  // readFormCategory: (formName, tocName) => {
+  readFormCategory: (categoryName) => {
+    // console.count(`readFormCategory invoked`);
+    return get()[categoryName];
   },
-  readFormCategoryValue: (category, key) => {
-    console.count(`readFormCategoryValue invoked`);
-    return category[key];
+  readFormCategoryValue: (categoryName, key) => {
+    // console.count(`readFormCategoryValue invoked`);
+    return categoryName[key];
   },
 }));
 

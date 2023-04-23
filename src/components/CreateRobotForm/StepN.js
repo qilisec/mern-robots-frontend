@@ -9,6 +9,11 @@ import useFormStore from '../../stores/robotFormStore';
 
 // NOTE: I used custom classes defined in input.css to style the elements. This is actually a Tailwind CSS antipattern. Tailwind CSS is intended to be applied "in-line". I used variable names in order to allow for some abstraction in case I will use this component for more than one form. That way, I can give each form its own style. I'm not sure whether the trade-off is "worth it" (i.e. if this abstraction is actually useful)
 
+const createInputLabel = (inputField) =>
+  inputField
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^(.)(.*)$/, (match, g1, g2) => g1.toUpperCase() + g2);
+
 const GeneratePageNInputs = (props) => {
   // NOTE: Below: Don't use register from this component's scope because the form "read" functions (e.g getValue, handleSubmit) that are employed in the parent StepN component scope will not be able to access the registered values. Instead, declare register in StepN scope and pass it to this component as a prop.
   // const { register } = useForm();
@@ -33,8 +38,8 @@ const GeneratePageNInputs = (props) => {
   //   (state) => state.readFormCategoryValue
   // );
   const pageName = readFormToc(formType, page);
-  const fullName = `${formType}${pageName}`;
-  const formFields = readFormCategory(formType, pageName);
+  // const fullName = `${formType}${pageName}`;
+  const formFields = readFormCategory(pageName);
 
   /*
     Little State Machine Implementation
@@ -45,7 +50,7 @@ const GeneratePageNInputs = (props) => {
 
     */
 
-  console.group(`GeneratePageNInputs`);
+  console.groupCollapsed(`GeneratePageNInputs`);
   console.table(`GeneratePageNInputs:`, {
     page,
     pageName,
@@ -57,7 +62,8 @@ const GeneratePageNInputs = (props) => {
   const formFieldKeys = Object.keys(formFields);
 
   const subFormPageInputElements = formFieldKeys.map((fieldKey) => {
-    const fieldId = `${fullName}.${fieldKey}`;
+    // const fieldId = `${fullName}.${fieldKey}`;
+    const fieldId = `${pageName}.${fieldKey}`;
     const storeDefault = readFormCategoryValue(formFields, fieldKey);
     /*
     Little-State Machine Implementation
@@ -104,11 +110,6 @@ const GeneratePageNInputs = (props) => {
   return subFormPageInputElements;
 };
 
-const createInputLabel = (inputField) =>
-  inputField
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^(.)(.*)$/, (match, g1, g2) => g1.toUpperCase() + g2);
-
 function StepN(props) {
   /*
   Little-State Machine Implementatino
@@ -124,9 +125,11 @@ function StepN(props) {
   const toggleFormInputFill = useFormStore(
     (state) => state.toggleFormInputFill
   );
+
   // const testData = () => console.log(`testData`, getValues());
-  console.log(`StepN formFill State:`, formFill);
+  // console.log(`StepN formFill State:`, formFill);
   // NOTE: You can't use handleSubmit for obtaining input values to refresh the state with (e.g. onClick=handleSubmit(nextPage)) because handle submit is only intended to be used with the submit input. Instead, use getValues().
+
   const handlePrevPage = () => {
     const data = getValues();
     console.log(`handlePrevPage`, data);
@@ -144,17 +147,24 @@ function StepN(props) {
     setFormFill(newToggleState);
     return toggleFormInputFill(newToggleState);
   };
+
+  const submitCreateRobot = (data) => {
+    // console.log(`submitCreateRobot: data`, data);
+    onSubmit(data, form);
+  };
+
   // NOTE: Below: Don't invoke GeneratePageNInputs as a function. Instead, make it a component and pass the register method in order to link up iteratively generated inputs with this parent Form wrapper
   // const CurrentFormInputs = GeneratePageNInputs(page, form, formStyle);
 
   return (
     <div className={`${formStyle}`}>
       <h1 className={`${formStyle}`}>Create Robot</h1>
-      <form className={`${formStyle}`} onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className={`${formStyle}`}
+        onSubmit={handleSubmit(submitCreateRobot)}
+      >
         <h2 className={`${formStyle}`}>Step {page + 1} of 5</h2>{' '}
-        {/* {CurrentFormInputs} */}
         <GeneratePageNInputs {...props} register={register} />
-        {/* <GeneratePageNInputs {...props} page={page} register={register} /> */}
         <input className={`${formStyle}`} type="submit" />
         <div className="text-center">
           {page > 0 && (
@@ -166,16 +176,17 @@ function StepN(props) {
               Back
             </button>
           )}
-          <button
+          {/* <button
+            type="button"
             onClick={handleToggleFormInputFill}
             className="text-white bg-pink-500 w-5"
           >
             Test
-          </button>
+          </button> */}
           {page < 5 && (
             <button
               type="button"
-              className="fixed w-[265px] px-5 py-2 text-base tracking-wide text-slate-800 uppercase translate-x-2 bg-pink-300 border-none rounded appearance-none place-items-end"
+              className="fixed w-[285px] px-5 py-2 text-base tracking-wide text-slate-800 uppercase translate-x-2 bg-pink-300 border-none rounded appearance-none place-items-end"
               onClick={handleNextPage}
             >
               Next

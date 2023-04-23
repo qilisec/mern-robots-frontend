@@ -23,7 +23,7 @@ const Result = (props) => {
   */
 
   const { handleSubmit } = useForm();
-  console.group(`Result`);
+  console.groupCollapsed(`Result`);
   const { form, formNavigation } = props;
   const { prevPage } = formNavigation;
 
@@ -31,12 +31,9 @@ const Result = (props) => {
   const formToc = useFormStore((state) => state[`${form}Toc`]);
   console.log(`formToc: ${formToc}`);
 
-  const output = formToc.map((property) => {
-    console.group(`Result output`);
-    console.log(`property:`, property);
-    const categoryBlock = readFormCategory(form, property);
-    console.log('categoryBlock', categoryBlock);
-    console.groupEnd();
+  const output = formToc.map((category) => {
+    const categoryBlock = readFormCategory(category);
+    console.table('Result: output:', category, categoryBlock);
     return categoryBlock;
   });
 

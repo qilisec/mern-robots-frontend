@@ -23,22 +23,27 @@ import { changePrivateApiInterceptors } from '../api/interceptors';
 import { useCurrentUser, useCurrentUserDefaults } from './useCurrentUser';
 
 const { log } = console;
+const logToggle = 0;
+const debug = (message) => {
+  if (logToggle) return log(message);
+};
+
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  console.group(`NEW AUTH`);
-  console.count('counter - auth');
+  // console.group(`NEW AUTH`);
+  // console.count('counter - auth');
   // Created custom hook
   const [currentUser, setCurrentUser] = useCurrentUser(useCurrentUserDefaults);
   const { accessToken, username, userId, isLoading, status } = currentUser;
 
-  console.table(`NEW AUTH - Initial`, {
-    accessToken: accessToken?.slice(-8),
-    username,
-    userId,
-    isLoading,
-    status,
-  });
+  // console.table(`NEW AUTH - Initial`, {
+  //   accessToken: accessToken?.slice(-8),
+  //   username,
+  //   userId,
+  //   isLoading,
+  //   status,
+  // });
 
   const login = useCallback(async (usernameAttempt, passwordAttempt) => {
     const userInfo = { username: usernameAttempt, password: passwordAttempt };
@@ -68,7 +73,7 @@ export const AuthProvider = ({ children }) => {
     // Send userId to backend via argument, send AT via header, send RT via cookie. decode tokens and verify they match userId from argument.
     // Actually, don't check against RT. Don't have a function for that yet. KISS
     const logoutReq = await logoutBackend(userId);
-    log(`Auth: logout requested: ${userId}`);
+    debug(`Auth: logout requested: ${userId}`);
     if (logoutReq) {
       setCurrentUser({
         ...useCurrentUserDefaults,
@@ -77,7 +82,7 @@ export const AuthProvider = ({ children }) => {
 
       return true;
     }
-    log(`Logout Failed: ${logoutReq}`);
+    debug(`Logout Failed: ${logoutReq}`);
     return false;
   }, []);
 
@@ -108,7 +113,7 @@ export const AuthProvider = ({ children }) => {
         refreshInterceptors(privateApi, accessToken);
         return true;
       }
-      log(`register failed`);
+      debug(`register failed`);
     },
     []
   );
@@ -134,10 +139,10 @@ export const AuthProvider = ({ children }) => {
   const reloadAuthentication = async () => {
     try {
       const refreshToken = await requestRefreshToken();
-      log(`AUTH RELOAD 1️⃣: Recovered RT`);
+      debug(`AUTH RELOAD 1️⃣: Recovered RT`);
 
       const accessToken = refreshToken ? await requestAccessToken() : null;
-      log(`AUTH RELOAD 2️⃣: NEW AT: ${accessToken?.slice(-8)}`);
+      debug(`AUTH RELOAD 2️⃣: NEW AT: ${accessToken?.slice(-8)}`);
 
       const { username, userId } = await decodeJwt(accessToken);
 
@@ -150,7 +155,7 @@ export const AuthProvider = ({ children }) => {
 
       // return true;
     } catch (err) {
-      log(`🔴 reloadAuthentication Error 🔴`, err);
+      debug(`🔴 reloadAuthentication Error 🔴`, err);
       setCurrentUser({
         ...currentUser,
         accessToken: null,
@@ -176,15 +181,15 @@ export const AuthProvider = ({ children }) => {
 
   // Use Effect for auth recovery on page refresh
   useEffect(() => {
-    console.group('AUTH RELOAD');
+    // console.group('AUTH RELOAD');
     reloadAuthentication();
 
-    console.groupEnd();
+    // console.groupEnd();
 
     return setCurrentUser({ isLoading: false });
   }, [accessToken]);
 
-  console.groupEnd();
+  // console.groupEnd();
 
   return (
     <AuthContext.Provider

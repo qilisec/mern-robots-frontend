@@ -53,10 +53,9 @@ function Form() {
   const formToc = useFormStore((state) => state[`${form}Toc`]);
 
   console.group(
-    `createRobotForm: ${Date.now().toString().slice(-5)}`,
-    getState
+    `createRobotForm Page ${page + 1}: ${Date.now().toString().slice(-5)}`,
+    { state: getState }
   );
-  console.log(`CreateRobotForm Page ${page + 1}`);
 
   useEffect(() => {
     if (!launchedForm && page !== 0) {
