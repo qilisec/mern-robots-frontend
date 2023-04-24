@@ -12,7 +12,7 @@ const formDefaults = {
       password: '',
       maidenName: 'SampleMaidenName',
       email: 'email@email.com',
-      birthdate: '2000-01-01',
+      birthDate: '2000-01-01',
       age: '10',
       phone: '+1 111-111-1111',
       university: 'Sample University',
@@ -53,6 +53,13 @@ const formDefaults = {
       'robotFormFinancial',
       'robotFormMisc',
     ],
+    robotSchema: {
+      robotFormBasic: '',
+      robotFormAppearance: '',
+      robotFormLocation: 'address',
+      robotFormFinancial: 'bank',
+      robotFormMisc: '',
+    },
   },
 };
 
@@ -144,14 +151,22 @@ const useFormStore = create((set, get) => ({
     set(
       produce((draft) => {
         formToc.map((category) => {
+          const schemaCategory = get().convertFormTocToSchema(category);
           const categoryInfo = get().readFormCategory(category);
           return Object.keys(categoryInfo).map((field) => {
             const fieldValue = data[category]
               ? data[category][field]
               : categoryInfo[field];
+
+            console.table(`onSubmit mapping:`, { category, field, fieldValue });
             // NOTE: Can't use .field because that returns static "field" property: {"field": fieldValue}
             // draft.formSubmission.field = fieldValue;
-            draft.formSubmission[field] = fieldValue;
+            // console.log(`onSubmit field:`, field);
+            if (schemaCategory && !draft.formSubmission[schemaCategory])
+              draft.formSubmission[schemaCategory] = {};
+            schemaCategory
+              ? (draft.formSubmission[schemaCategory][field] = fieldValue)
+              : (draft.formSubmission[field] = fieldValue);
             draft[category][field] = fieldValue;
             return draft;
           });
@@ -159,6 +174,7 @@ const useFormStore = create((set, get) => ({
         draft.page = 5;
       })
     );
+    return get().formSubmission;
   },
   readFormToc: (formName, currentPage) => {
     try {
@@ -177,6 +193,7 @@ const useFormStore = create((set, get) => ({
     // console.count(`readFormCategoryValue invoked`);
     return categoryName[key];
   },
+  convertFormTocToSchema: (formCategory) => get().robotSchema[formCategory],
 }));
 
 export default useFormStore;

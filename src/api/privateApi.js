@@ -46,20 +46,6 @@ export const getRefreshToken = async () => {
   return rtkn;
 };
 
-// export const getNewAccessToken = async (refreshTokenData) => {
-//   debug(`getNewAccessToken invoked`);
-//   if (refreshTokenData) {
-//     const payload = { refreshToken: refreshTokenData };
-//     const check = await privateApi.put(`/authentication/refresh`, payload, {
-//       withCredentials: true,
-//       secure: true,
-//       headers: { 'current-function': 'refreshAccessToken' },
-//     });
-//     const { newAccessToken } = check.data;
-//     debug(`getNewAccessToken finished; accessToken`, newAccessToken);
-//     return newAccessToken;
-//   }
-// };
 export const getNewAccessToken = async () => {
   debug(`getNewAccessToken invoked`);
   try {
@@ -106,10 +92,26 @@ export const getProfilePage = async (queryUserId) => {
   }
 };
 
+export const createRobot = async (formInfo, user) => {
+  try {
+    const payload = { ...formInfo, createdBy: user };
+    const newRobot = await privateApi.post(`/robot`, payload, {
+      secure: true,
+      headers: {
+        'current-function': 'createRobot',
+      },
+    });
+    console.log(`createRobot API: newRobot:`, newRobot);
+    return newRobot;
+  } catch (err) {
+    console.log(`createRobot API error:`, err);
+  }
+};
 export default {
   privateApi,
   getRefreshToken,
   getNewAccessToken,
   logoutBackend,
   getProfilePage,
+  createRobot,
 };

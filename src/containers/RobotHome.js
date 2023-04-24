@@ -15,10 +15,10 @@ export default function RobotHome(props) {
   const queryClient = useQueryClient();
   const [searchfield, setSearchfield] = useState('');
 
-  // console.group('RobotHome');
+  console.group('RobotHome');
   console.count('counter - RobotHome');
   const auth = useAuth();
-  const { accessToken, username } = auth.currentUser;
+  const { accessToken, username, isLoading } = auth.currentUser;
   const currentUsername = auth && username ? username : null;
   // auth && auth.currentAuthUsername ? auth.currentAuthUsername : null;
 
@@ -42,12 +42,22 @@ export default function RobotHome(props) {
 
   const fetchRobotMutation = useMutation({
     mutationFn: (preMutation) => {
+      console.count(`fetchMutation invoked`);
       const mutatedRobots = preMutation.map((robot) => {
-        robot.robotId = robot.id;
+        // console.log(`premutation robot:`, robot);
+        const { id } = robot;
+        robot.robotId = Number(id);
         robot.userRole = 'public';
         robot.createdBy = 'seed';
         delete robot.id;
-        addRobotToDb(robot);
+        console.table(
+          `RobotHome: fetchRobotMutation:`,
+          robot.robotId,
+          typeof id,
+          Number(id),
+          Number(robot.robotId)
+        );
+        if (robot.robotId) addRobotToDb(robot);
         return robot;
       });
       return mutatedRobots;
@@ -63,22 +73,30 @@ export default function RobotHome(props) {
       setRobots([...dbData.data]);
     } else if (!fetchIsError && fetchData) {
       try {
-        console.log(`fetch found`, fetchData);
+        console.group(`fetch`);
+        console.log(
+          `fetching: fetchIsError:`,
+          fetchIsError,
+          'fetchData',
+          fetchData
+        );
+        console.groupEnd();
         fetchRobotMutation.mutate(fetchData);
         setRobots([...fetchData]);
       } catch (err) {
         console.log(err);
       }
     }
-  }, [dbData, fetchData, dbErr, fetchErr]);
+  }, [dbData, fetchData, dbIsError, fetchIsError]);
 
   async function getRobotsFromFetchQuery() {
-    return fetch('https://dummyjson.com/users?limit=100')
+    return fetch('https://dummyjson.com/users?limit=1')
       .then((response) => response.json())
       .then((data) => data.users);
   }
 
   async function addRobotToDb(robot) {
+    console.log(`addRobotToDbInvoked: robot.robotId:`, robot.robotId);
     try {
       // Note that fetched robots don't have _ids since those are added by MongoDB
       const dbCheck = robot._id ? await getRobotById(robot._id) : null;
@@ -101,14 +119,24 @@ export default function RobotHome(props) {
     const fullName = `${robot.firstName} ${robot.lastName}`;
     return fullName.toLowerCase().includes(searchfield.toLowerCase());
   });
-
-  if (robots.length === 0) {
-    console.log(
-      '------------------------------------\n---------------Loading--------------\n------------------------------------'
-    );
+  console.groupEnd();
+  if (robots.length === 0 || isLoading) {
+    console.table('---Loading---', {
+      dbData,
+      fetchData,
+      dbIsError,
+      dbErr,
+      fetchIsError,
+      fetchErr,
+      'robot-length': robots.length,
+      accessToken,
+      username,
+      count,
+      queryClient,
+    });
     return <h1>Loading</h1>;
   }
-  // console.groupEnd();
+
   return (
     <div className="text-center my-2.5">
       <h1 className="text-white text-3xl font-bold pb-3 border-b">

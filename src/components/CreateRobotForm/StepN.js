@@ -6,7 +6,14 @@ import { useForm } from 'react-hook-form';
 // import ComponentWithRouterProp from '../ComponentWithRouterProp';
 // import updateAction from '../../updateAction';
 import useFormStore from '../../stores/robotFormStore';
+import { createRobot } from '../../api/privateApi';
+import { useAuth } from '../auth';
 
+const { log } = console;
+const logToggle = 1;
+const debug = (message) => {
+  if (logToggle) log(message);
+};
 // NOTE: I used custom classes defined in input.css to style the elements. This is actually a Tailwind CSS antipattern. Tailwind CSS is intended to be applied "in-line". I used variable names in order to allow for some abstraction in case I will use this component for more than one form. That way, I can give each form its own style. I'm not sure whether the trade-off is "worth it" (i.e. if this abstraction is actually useful)
 
 const createInputLabel = (inputField) =>
@@ -74,9 +81,15 @@ const GeneratePageNInputs = (props) => {
     const fieldInputElement =
       typeof storeDefault === 'object' ? (
         Object.keys(storeDefault).map((subFieldKey) => {
+          debug(`subfield generation invoked`);
           const subfieldId = `${fieldId}.${subFieldKey}`;
           const subfieldDefault = storeDefault[subFieldKey];
-
+          console.table(`StepN: generateInputs`, {
+            fieldid: fieldId,
+            subfieldkey: subFieldKey,
+            subfieldid: subfieldId,
+            storedefault: storeDefault,
+          });
           const subOutput = (
             <label
               key={`${formFields}.${fieldKey}.${subFieldKey}`}
@@ -117,6 +130,8 @@ function StepN(props) {
   // const { page } = state;
   */
 
+  const auth = useAuth();
+  const { username } = auth.currentUser;
   const { register, getValues, handleSubmit } = useForm();
   const page = useFormStore((state) => state.page);
   const { form, formStyle, formNavigation } = props;
@@ -126,19 +141,19 @@ function StepN(props) {
     (state) => state.toggleFormInputFill
   );
 
-  // const testData = () => console.log(`testData`, getValues());
-  // console.log(`StepN formFill State:`, formFill);
+  // const testData = () => debug(`testData`, getValues());
+  // debug(`StepN formFill State:`, formFill);
   // NOTE: You can't use handleSubmit for obtaining input values to refresh the state with (e.g. onClick=handleSubmit(nextPage)) because handle submit is only intended to be used with the submit input. Instead, use getValues().
 
   const handlePrevPage = () => {
     const data = getValues();
-    console.log(`handlePrevPage`, data);
+    debug(`handlePrevPage`, data);
     prevPage(data);
   };
 
   const handleNextPage = () => {
     const data = getValues();
-    console.log(`handleNextPage`, data);
+    debug(`handleNextPage`, data);
     nextPage(data);
   };
 
@@ -148,9 +163,16 @@ function StepN(props) {
     return toggleFormInputFill(newToggleState);
   };
 
-  const submitCreateRobot = (data) => {
-    // console.log(`submitCreateRobot: data`, data);
-    onSubmit(data, form);
+  const submitCreateRobot = async (data) => {
+    try {
+      // debug(`submitCreateRobot: data`, data);
+      const formInfo = onSubmit(data, form);
+      const newRobot = await createRobot(formInfo, username);
+      debug(`submitCreateRobot: newRobot:`, newRobot);
+      return newRobot;
+    } catch (err) {
+      debug(`submitCreateRobot: error:`, err);
+    }
   };
 
   // NOTE: Below: Don't invoke GeneratePageNInputs as a function. Instead, make it a component and pass the register method in order to link up iteratively generated inputs with this parent Form wrapper

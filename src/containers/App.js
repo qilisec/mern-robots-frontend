@@ -19,7 +19,7 @@ import { User1Signin, User2Signin } from '../components/DirectUserLogins';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 function App() {
-  // console.count('counter - App');
+  console.count('counter - App');
   const [count, setCount] = useState(2);
   const [robots, setRobots] = useState([]);
 
