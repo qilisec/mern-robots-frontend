@@ -30,11 +30,11 @@ label.create-robot-form {
 }
 
 input.create-robot-form {
-  @apply text-black inline-block box-border w-full border rounded border-white px-3.5 py-2.5 mb-1 text-lg;
+  @apply text-black box-border w-full border rounded border-white px-3.5 py-2.5 mb-1 text-lg;
 }
 
 input[type="submit"].create-robot-form {
-  @apply inline-block w-full px-5 py-3 mt-3 mb-1 text-base font-thin tracking-wide text-white uppercase bg-pink-500 border-none rounded appearance-none;
+  @apply w-full px-5 py-3 mt-3 mb-1 text-base font-thin tracking-wide text-white uppercase bg-pink-500 border-none rounded appearance-none;
 }
 
 span.NavBar-Head {

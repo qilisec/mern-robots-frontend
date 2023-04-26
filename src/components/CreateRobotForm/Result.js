@@ -49,7 +49,7 @@ const Result = (props) => {
       <div>
         <button
           type="button"
-          className="text-slate-800 bg-pink-300 inline-block w-full py-2 px-5 text-base tracking-wide uppercase border-none rounded appearance-none"
+          className="text-slate-800 bg-pink-300 w-full py-2 px-5 text-base tracking-wide uppercase border-none rounded appearance-none"
           onClick={handleSubmit(prevPage)}
         >
           Back

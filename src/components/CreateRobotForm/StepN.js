@@ -30,7 +30,7 @@ const GeneratePageNInputs = (props) => {
   const { form: formType, formStyle, register } = props;
   // const { form: formType, formStyle, page, register } = props;
 
-  // Destructuring like this may cause excess re-renders The question is whether or not these. There doesn't seem to be any difference in my specific case:
+  // NOTE: Destructuring like this may cause excess re-renders The question is whether or not these. There doesn't seem to be any difference in my specific case:
   // Home -> Page 1 -> Page 2 => Page 3 = 2, 3, 20 invocations in both cases
   const [readFormToc, readFormCategory, readFormCategoryValue] = useFormStore(
     (state) => [
@@ -39,13 +39,13 @@ const GeneratePageNInputs = (props) => {
       state.readFormCategoryValue,
     ]
   );
+  const formInputFill = useFormStore((state) => state.formInputFill);
   // const readFormToc = useFormStore((state) => state.readFormToc);
   // const readFormCategory = useFormStore((state) => state.readFormCategory);
   // const readFormCategoryValue = useFormStore(
   //   (state) => state.readFormCategoryValue
   // );
   const pageName = readFormToc(formType, page);
-  // const fullName = `${formType}${pageName}`;
   const formFields = readFormCategory(pageName);
 
   /*
@@ -57,7 +57,7 @@ const GeneratePageNInputs = (props) => {
 
     */
 
-  console.groupCollapsed(`GeneratePageNInputs`);
+  console.group(`GeneratePageNInputs`);
   console.table(`GeneratePageNInputs:`, {
     page,
     pageName,
@@ -67,11 +67,12 @@ const GeneratePageNInputs = (props) => {
   });
 
   const formFieldKeys = Object.keys(formFields);
-
+  console.log(`generate component Invoked: formInputFill`, formInputFill);
   const subFormPageInputElements = formFieldKeys.map((fieldKey) => {
-    // const fieldId = `${fullName}.${fieldKey}`;
     const fieldId = `${pageName}.${fieldKey}`;
-    const storeDefault = readFormCategoryValue(formFields, fieldKey);
+    const storeDefault = formInputFill
+      ? readFormCategoryValue(formFields, fieldKey)
+      : '';
     /*
     Little-State Machine Implementation
     // const fieldId = `${formFields}.${fieldKey}`;
@@ -81,9 +82,13 @@ const GeneratePageNInputs = (props) => {
     const fieldInputElement =
       typeof storeDefault === 'object' ? (
         Object.keys(storeDefault).map((subFieldKey) => {
-          debug(`subfield generation invoked`);
+          debug(
+            `subfield generation invoked, formInputFill is: ${formInputFill}`
+          );
           const subfieldId = `${fieldId}.${subFieldKey}`;
-          const subfieldDefault = storeDefault[subFieldKey];
+          const subfieldDefault = formInputFill
+            ? storeDefault[subFieldKey]
+            : '';
           console.table(`StepN: generateInputs`, {
             fieldid: fieldId,
             subfieldkey: subFieldKey,
@@ -132,11 +137,13 @@ function StepN(props) {
 
   const auth = useAuth();
   const { username } = auth.currentUser;
-  const { register, getValues, handleSubmit } = useForm();
+  const { register, getValues, handleSubmit, reset } = useForm();
   const page = useFormStore((state) => state.page);
   const { form, formStyle, formNavigation } = props;
   const { prevPage, nextPage, onSubmit } = formNavigation;
   const [formFill, setFormFill] = useState(form);
+
+  const formInputFill = useFormStore((state) => state.formInputFill);
   const toggleFormInputFill = useFormStore(
     (state) => state.toggleFormInputFill
   );
@@ -157,10 +164,10 @@ function StepN(props) {
     nextPage(data);
   };
 
-  const handleToggleFormInputFill = () => {
-    const newToggleState = formFill ? null : form;
-    setFormFill(newToggleState);
-    return toggleFormInputFill(newToggleState);
+  const handleToggleFormFill = () => {
+    console.log(`handleToggleForm: form`, form);
+    toggleFormInputFill(form);
+    reset();
   };
 
   const submitCreateRobot = async (data) => {
@@ -188,32 +195,37 @@ function StepN(props) {
         <h2 className={`${formStyle}`}>Step {page + 1} of 5</h2>{' '}
         <GeneratePageNInputs {...props} register={register} />
         <input className={`${formStyle}`} type="submit" />
-        <div className="text-center">
-          {page > 0 && (
-            <button
-              type="button"
-              className="fixed w-[250px] py-2 px-5 text-base tracking-wide text-slate-800 uppercase  bg-pink-300 border-none rounded appearance-none place-items-end -translate-x-[280px]"
-              onClick={handlePrevPage}
-            >
-              Back
-            </button>
-          )}
-          {/* <button
+        <div className="flex flex-row justify-between justify-items-stretch">
+          {/* {page > 0 && ( */}
+          <button
             type="button"
-            onClick={handleToggleFormInputFill}
-            className="text-white bg-pink-500 w-5"
+            // eslint-disable-next-line prettier/prettier, prefer-template
+            className={'flex-grow flex-shrink px-4 py-2 w-2/5  bg-pink-300 text-base tracking-wide uppercase border-none rounded appearance-none ' + (page > 0 ? 'text-slate-800' : 'text-white opacity-30')}
+            onClick={page > 0 ? handlePrevPage : () => ({})}
           >
-            Test
-          </button> */}
-          {page < 5 && (
-            <button
-              type="button"
-              className="fixed w-[285px] px-5 py-2 text-base tracking-wide text-slate-800 uppercase translate-x-2 bg-pink-300 border-none rounded appearance-none place-items-end"
-              onClick={handleNextPage}
-            >
-              Next
-            </button>
-          )}
+            Back
+          </button>
+          {/* )} */}
+          <button
+            className={`flex-grow flex-shrink px-2 mx-2 text-slate-800 text-base tracking-wide uppercase border-none rounded appearance-none ${
+              formInputFill ? 'bg-pink-600' : 'bg-pink-300'
+            }`}
+            type="button"
+            onClick={handleToggleFormFill}
+          >
+            Auto-Fill?
+          </button>
+          {/* {page < 5 && ( */}
+          <button
+            type="button"
+            className={`flex-grow flex-shrink w-2/5 px-4 py-2 bg-pink-300 text-base tracking-wide uppercase border-none rounded appearance-none ${
+              page < 5 ? 'text-slate-800' : 'text-white'
+            }`}
+            onClick={page < 5 ? handleNextPage : () => ({})}
+          >
+            Next
+          </button>
+          {/* )} */}
         </div>
       </form>
     </div>

@@ -77,44 +77,11 @@ const useFormStore = create((set, get) => ({
   logLastError: (message) => set((state) => ({ lastError: message })),
   page: 0,
   formSubmission: {},
-  formInputPrefill: null,
+  formInputFill: true,
   launchedForm: false,
-  // robotFormBasic,
-  // robotFormAppearance,
-  // robotFormLocation,
-  // robotFormFinancial,
-  // robotFormMisc,
-  // robotFormToc,
   ...formDefaults.robotFormDefaults,
   toggleFormStatus: (status) => set(() => ({ launchedForm: status })),
   resetForm: () => set((state) => ({ page: (state.page = 0) })),
-  toggleFormInputFill: (formType) => {
-    if (formType !== null) {
-      set(
-        produce((draft) => {
-          const defaultsSelector = `${formType}Defaults`;
-          return { ...formDefaults[defaultsSelector] };
-        })
-      );
-    } else {
-      set(
-        produce((state, draft) => {
-          const toc = state.robotFormToc.map((field) => `robotForm${field}`);
-          toc.map((field) => {
-            draft.field = { ...field };
-            console.log(`toc map`, field);
-            return Object.keys(draft.field).map(
-              (fieldProperty) => (draft[`${field}`][`${fieldProperty}`] = null)
-              // (fieldProperty) => (draft.field.fieldProperty = null)
-            );
-            // draft
-          });
-          console.log(`toggleFormInputField draft:`, draft);
-          // return { ...draft };
-        })
-      );
-    }
-  },
   prevPage: (data) => {
     // console.log(`zustand: prevPage`, data);
     return set((state) => ({ ...data, page: state.page - 1 }));
@@ -142,9 +109,14 @@ const useFormStore = create((set, get) => ({
     //   })
     // );
   },
-  updateForm: (data) => {
-    console.log(`zustand: updateForm`, data);
-    return set(() => ({ ...data }));
+  toggleFormInputFill: (formName) => {
+    const reloadDefaults = get().formInputFill
+      ? {}
+      : formDefaults[`${formName}Defaults`];
+    set((state) => ({
+      ...reloadDefaults,
+      formInputFill: !state.formInputFill,
+    }));
   },
   onSubmit: (data, formName) => {
     const formToc = get()[`${formName}Toc`];

@@ -70,12 +70,6 @@ function Form() {
 
   const formNavigation = { prevPage, nextPage, onSubmit };
 
-  // console.log(
-  //   `CreateRobotForm: formToc; formToc.length`,
-  //   formToc,
-  //   formToc.length,
-  //   page > formToc.length
-  // );
   console.groupEnd();
 
   const robotFormPage =
@@ -94,55 +88,5 @@ function Form() {
     );
 
   return robotFormPage;
-  // const conditionalComponent = () => {
-  //   switch (page) {
-  //     case 0:
-  //       return (
-  //         <StepN
-  //           form="robotForm"
-  //           formStyle="create-robot-form"
-  //           formNavigation={formNavigation}
-  //         />
-  //       );
-  //     case 1:
-  //       return (
-  //         <StepN
-  //           form="robotForm"
-  //           formStyle="create-robot-form"
-  //           formNavigation={formNavigation}
-  //         />
-  //       );
-  //     case 2:
-  //       return (
-  //         <StepN
-  //           form="robotForm"
-  //           formStyle="create-robot-form"
-  //           formNavigation={formNavigation}
-  //         />
-  //       );
-  //     case 3:
-  //       return (
-  //         <StepN
-  //           form="robotForm"
-  //           formStyle="create-robot-form"
-  //           formNavigation={formNavigation}
-  //         />
-  //       );
-  //     case 4:
-  //       return (
-  //         <StepN
-  //           form="robotForm"
-  //           formStyle="create-robot-form"
-  //           formNavigation={formNavigation}
-  //         />
-  //       );
-  //     case 5:
-  //       return <Result formNavigation={formNavigation} />;
-  //     default:
-  //       return <StepN />;
-  //   }
-  // };
-
-  // return <>{conditionalComponent()}</>;
 }
 export default Form;
