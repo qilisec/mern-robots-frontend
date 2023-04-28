@@ -23,7 +23,7 @@ import { changePrivateApiInterceptors } from '../api/interceptors';
 import { useCurrentUser, useCurrentUserDefaults } from './useCurrentUser';
 
 const { log } = console;
-const logToggle = 0;
+const logToggle = 1;
 const debug = (message) => {
   if (logToggle) return log(message);
 };
@@ -44,7 +44,6 @@ export const AuthProvider = ({ children }) => {
   //   isLoading,
   //   status,
   // });
-
   const login = useCallback(async (usernameAttempt, passwordAttempt) => {
     const userInfo = { username: usernameAttempt, password: passwordAttempt };
     const signinAttempt = await authenticateSignIn(userInfo);
@@ -138,6 +137,8 @@ export const AuthProvider = ({ children }) => {
 
   const reloadAuthentication = async () => {
     try {
+      console.group(`Auth: Initial Reload`);
+      console.count(`Auth: Initial Reload Invoked`);
       const refreshToken = await requestRefreshToken();
       debug(`AUTH RELOAD 1️⃣: Recovered RT`);
 
@@ -154,6 +155,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       // return true;
+      console.groupEnd();
     } catch (err) {
       debug(`🔴 reloadAuthentication Error 🔴`, err);
       setCurrentUser({
@@ -181,13 +183,12 @@ export const AuthProvider = ({ children }) => {
 
   // Use Effect for auth recovery on page refresh
   useEffect(() => {
-    // console.group('AUTH RELOAD');
-    reloadAuthentication();
-
-    // console.groupEnd();
+    // NOTE: Even with the return cleanup function setting isLoading to false: I need to set if statement on reloadAuthentication to prevent refiring, possibly due to the rate at which reload authentication was invoked.
+    if (isLoading) reloadAuthentication();
 
     return setCurrentUser({ isLoading: false });
   }, [accessToken]);
+  // }, [isLoading === true]);
 
   // console.groupEnd();
 

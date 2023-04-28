@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const { log } = console;
-const logToggle = 0;
+const logToggle = 1;
 const debug = (message) => {
   if (logToggle) log(message);
 };
@@ -107,6 +107,7 @@ export const createRobot = async (formInfo, user) => {
     console.log(`createRobot API error:`, err);
   }
 };
+
 export default {
   privateApi,
   getRefreshToken,

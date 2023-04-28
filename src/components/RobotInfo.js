@@ -13,7 +13,9 @@ function useIsMounted(props) {
   return useCallback(() => isMounted.current, []);
 }
 
-export default function RobotInfo({ robots }) {
+export default function RobotInfo(props) {
+  const { allRobots } = props;
+  console.log(`RobotInfo: robots:`, allRobots);
   const { id } = useParams();
   const [currentRobot, setCurrentRobot] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +25,7 @@ export default function RobotInfo({ robots }) {
 
   useEffect(() => {
     const getRobotInfo = async () => {
-      const matchingRobot = await robots.find(
+      const matchingRobot = await allRobots.find(
         (robot) => Number(robot.robotId) === Number(id)
       );
       try {
@@ -37,7 +39,7 @@ export default function RobotInfo({ robots }) {
       }
     };
     getRobotInfo();
-  }, [robots.length > 0]);
+  }, [allRobots.length > 0]);
   // useEffect(() => {
   //   const getRobotInfo = async () => {
   //     const matchingRobot = await robots.find(

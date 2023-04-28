@@ -9,10 +9,6 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 
 /*
 TODO: 
-Tabs for robot cards: On log in, show tab with user created robots, tab2 shows general robots
-Migrate state to Zustand
-Be able to click entire card for robot info, not just name
-Hook up create robot form to backend
 Add styling for profile page
 If RT/AT expires, actually log user out on front end and not just 401 error (i.e. setup res interceptor)
 */

@@ -18,10 +18,18 @@ import { getRefreshToken } from '../api/privateApi';
 import { User1Signin, User2Signin } from '../components/DirectUserLogins';
 import ErrorBoundary from '../components/ErrorBoundary';
 
+const { log } = console;
+const logToggle = 0;
+const debug = (message) => {
+  if (logToggle) return log(message);
+};
+
 function App() {
-  console.count('counter - App');
+  if (logToggle) console.count('App Component Rendered');
   const [count, setCount] = useState(2);
-  const [robots, setRobots] = useState([]);
+  const [ownCount, setOwnCount] = useState(2);
+  const [allRobots, setAllRobots] = useState([]);
+  const [ownedRobots, setOwnedRobots] = useState([]);
 
   return (
     <AuthProvider>
@@ -35,8 +43,12 @@ function App() {
               <RobotHome
                 count={count}
                 setCount={setCount}
-                robots={robots}
-                setRobots={setRobots}
+                allRobots={allRobots}
+                setAllRobots={setAllRobots}
+                ownedRobots={ownedRobots}
+                setOwnedRobots={setOwnedRobots}
+                ownCount={ownCount}
+                setOwnCount={setOwnCount}
               />
             }
           />
@@ -45,7 +57,10 @@ function App() {
           <Route exact path="/robot" element={<CreateRobotForm />} />
           {/* <Route exact path="/robot/step2" element={<Step2 />} /> */}
           <Route path="/robot/result" element={<Result />} />
-          <Route path="/robot/:id" element={<RobotInfo robots={robots} />} />
+          <Route
+            path="/robot/:id"
+            element={<RobotInfo allRobots={allRobots} />}
+          />
           {/* <Route path="/robot/:id" element={<RobotInfo />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
