@@ -50,7 +50,11 @@ function Form() {
 
   const form = 'robotForm';
   const formStyle = 'create-robot-form';
-  const formToc = useFormStore((state) => state[`${form}Toc`]);
+  const formToc = useFormStore(
+    (state) => state.forms[form][`${form}Toc`]
+    // (state) => state.formDefaults[form][`${form}Toc`]
+  );
+  // const formToc = useFormStore((state) => state[`${form}Toc`]);
 
   console.group(
     `createRobotForm Page ${page + 1}: ${Date.now().toString().slice(-5)}`,
@@ -61,10 +65,6 @@ function Form() {
     if (!launchedForm && page !== 0) {
       console.log(`CreateRobotForm accessed from navbar`);
       toggleFormStatus(true);
-      /*
-      Little-State-Machine Implementation
-      // actions.updateAction({ page: 0, launchedForm: true });
-      */
     }
   }, []);
 

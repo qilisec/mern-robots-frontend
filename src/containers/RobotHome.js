@@ -40,7 +40,7 @@ export default function RobotHome(props) {
     ownCount,
     setOwnCount,
   } = props;
-  const [isPending, startTransition] = useTransition();
+
   const queryClient = useQueryClient();
   const [searchfield, setSearchfield] = useState('');
   const [activeTab, setActiveTab] = useState('');
@@ -79,14 +79,6 @@ export default function RobotHome(props) {
   const partitionRobots = useCallback(
     (robotList) => {
       if (robotList && robotList.length > 0) {
-        // return robotList.reduce(
-        //   (partition, robot) => {
-        //     if (robot.createdBy === username) partition?.myRobots?.push(robot);
-        //     partition?.allRobots?.push(robot);
-        //     return partition;
-        //   },
-        //   { myRobots: [], allRobots: [] }
-        // );
         const myRobots = robotList.filter((robot) => {
           return robot.createdBy === username;
         });
@@ -230,6 +222,20 @@ export default function RobotHome(props) {
     return setActiveTab(tabId);
   };
 
+  const handleAddOneIncrement = () => {
+    return activeTab === 'tab-all-robots'
+      ? setCount((prevCount) => prevCount + 1)
+      : setOwnCount((prevCount) => prevCount + 1);
+  };
+
+  const handleAddTenIncrement = () => {
+    return activeTab === 'tab-all-robots'
+      ? setCount((prevCount) => prevCount + 10)
+      : setOwnCount((prevCount) => prevCount + 10);
+  };
+
+  const currentCount = activeTab === 'tab-all-robots' ? count : ownCount;
+
   console.groupEnd();
 
   if (allRobots.length === 0 || isLoading) {
@@ -251,14 +257,6 @@ export default function RobotHome(props) {
     return <h1>Loading</h1>;
   }
 
-  const disabledTab = (
-    <li>
-      <a className="inline-block p-4 text-gray-400 rounded-t-lg cursor-not-allowed dark:text-gray-500">
-        My Robots
-      </a>
-    </li>
-  );
-
   const combinedTabs = (
     <div className="flex flex-wrap" id="tabs-id">
       <div className="w-full text-center">
@@ -266,7 +264,7 @@ export default function RobotHome(props) {
           RoboFriends
         </h1>
         <h2 className="text-white text-white-font-extralight">
-          Showing {count} Robots
+          Showing {currentCount} Robots
         </h2>
         {currentUsername && (
           <div>
@@ -281,14 +279,14 @@ export default function RobotHome(props) {
         <button
           className="bg-pink-500 text-white uppercase mt-5 mx-2.5 p-2.5 text-base font-thin tracking-wide inline-block appearance-none border-none rounded"
           type="button"
-          onClick={() => setCount((prevCount) => Number(prevCount) + 1)}
+          onClick={handleAddOneIncrement}
         >
           Add Robot
         </button>
         <button
           className="bg-pink-500 text-white uppercase mt-5 mx-2.5 p-2.5 text-base font-thin tracking-wide inline-block appearance-none border-none rounded"
           type="button"
-          onClick={() => setCount((prevCount) => Number(prevCount) + 10)}
+          onClick={handleAddTenIncrement}
         >
           Add 10 Robots
         </button>
@@ -392,54 +390,13 @@ export default function RobotHome(props) {
   );
 
   return combinedTabs;
-
-  // return (
-  //   <div className="text-center my-2.5">
-  // <h1 className="text-white text-3xl font-bold pb-3 border-b">
-  //   RoboFriends
-  // </h1>
-  // <h2 className="text-white text-white-font-extralight">
-  //   Showing {count} Robots
-  // </h2>
-  // {currentUsername && (
-  //   <div>
-  //     <h2 className="text-white text-white-font-extralight mx-32">
-  //       {/* Hello {auth.currentAuthUsername}. Your access token is: */}
-  //       Hello {username}. Your access token is:
-  //     </h2>
-  //     <h2 className="text-white text-white-font-extralight mx-32">
-  //       ...{accessToken.slice(-8)}
-  //       {/* ...{auth.currentAuthUser.slice(-10)} */}
-  //     </h2>
-  //   </div>
-  // )}
-  // <button
-  //   className="bg-pink-500 text-white uppercase mt-5 mx-2.5 p-2.5 text-base font-thin tracking-wide inline-block appearance-none border-none rounded"
-  //   type="button"
-  //   onClick={() => setCount((prevCount) => Number(prevCount) + 1)}
-  // >
-  //   Add Robot
-  // </button>
-  // <button
-  //   className="bg-pink-500 text-white uppercase mt-5 mx-2.5 p-2.5 text-base font-thin tracking-wide inline-block appearance-none border-none rounded"
-  //   type="button"
-  //   onClick={() => setCount((prevCount) => Number(prevCount) + 10)}
-  // >
-  //   Add 10 Robots
-  // </button>
-  //     <SearchBox searchChange={onSearchChange} />
-  //     <Scroll>
-  //       {/* <ErrorBoundary> */}
-  //       <CardList robots={filteredRobots} count={count} />
-  //       {/* </ErrorBoundary> */}
-  //     </Scroll>
-  //   </div>
-  // );
 }
 
 RobotHome.propTypes = {
   count: PropTypes.number,
+  ownCount: PropTypes.number,
   setCount: PropTypes.func,
+  setOwnCount: PropTypes.func,
   allRobots: PropTypes.array,
   setAllRobots: PropTypes.func,
   ownedRobots: PropTypes.array,

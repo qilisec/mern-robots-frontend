@@ -1,44 +1,34 @@
-import { NavLink, useNavigate, Link } from 'react-router-dom';
-// import { useStateMachine } from 'little-state-machine';
-// import { useAuth } from './auth.last.working';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from './auth';
-// import { getRefreshToken, getNewAccessToken } from '../api/privateApi';
+
 import {
   reseedUsers,
   deleteSeedUsers,
   deleteSeedRobots,
   initialSeedUsers,
 } from '../api/reseedUsers';
-// import updateAction from '../updateAction';
-import { robotFormDefault } from '..';
 import useFormStore from '../stores/robotFormStore';
 
 export default function NavBar() {
   const auth = useAuth();
   const { accessToken, username, userId } = auth.currentUser;
-  // const navigate = useNavigate();
-  // const { actions, state } = useStateMachine({ updateAction });
 
   const toggleFormStatus = useFormStore((state) => state.toggleFormStatus);
-  const resetForm = useFormStore((state) => state.resetForm);
+  const resetFormProgress = useFormStore((state) => state.resetFormProgress);
   // Below: Wrong, use set to change state
   // const resetForm = useFormStore((state) => (state.page = 1));
 
   const loginStatus = auth && accessToken ? accessToken : null;
-  // auth && auth.currentAuthUser ? auth.currentAuthUser : null;
 
   const handleGoHome = () => {
     console.log(`invoked HandleGoHome; wiping history`);
-    resetForm();
+    resetFormProgress();
     toggleFormStatus(false);
-    // actions.updateAction({ launchedForm: false });
-    // navigate('/');
   };
 
-  // const resetRobotFormState = () => {
-  //   actions.updateAction({ ...robotFormDefault });
-  //   console.log(`resetRobotFormStore`, state);
-  // };
+  const handleGoCreateRobotForm = () => {
+    // toggleFormStatus(true);
+  };
 
   return (
     <nav>
@@ -112,7 +102,9 @@ export default function NavBar() {
         </>
       )}
       <span className="NavBar-Link">
-        <NavLink to="/robot">Create Robot</NavLink>
+        <NavLink to="/robot" onClick={handleGoCreateRobotForm}>
+          Create Robot
+        </NavLink>
       </span>
       {/* <span className="NavBar-Link">
         <NavLink onClick={() => resetRobotFormState()} to="/">

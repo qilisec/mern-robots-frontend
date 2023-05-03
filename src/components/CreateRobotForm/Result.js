@@ -24,15 +24,17 @@ const Result = (props) => {
 
   const { handleSubmit } = useForm();
   console.groupCollapsed(`Result`);
-  const { form, formNavigation } = props;
+  const { form: formName, formNavigation } = props;
   const { prevPage } = formNavigation;
 
   const readFormCategory = useFormStore((state) => state.readFormCategory);
-  const formToc = useFormStore((state) => state[`${form}Toc`]);
+  const formToc = useFormStore(
+    (state) => state.forms[formName][`${formName}Toc`]
+  );
   console.log(`formToc: ${formToc}`);
 
   const output = formToc.map((category) => {
-    const categoryBlock = readFormCategory(category);
+    const categoryBlock = readFormCategory(formName, category);
     console.table('Result: output:', category, categoryBlock);
     return categoryBlock;
   });

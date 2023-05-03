@@ -1,4 +1,5 @@
-import { useRef, lazy, Suspense } from 'react';
+import { useRef } from 'react';
+import PropTypes from 'prop-types';
 
 function NullOutHiddenComponents({ visible, children }) {
   const rendered = useRef(visible);
@@ -13,3 +14,8 @@ function NullOutHiddenComponents({ visible, children }) {
 }
 
 export default NullOutHiddenComponents;
+
+NullOutHiddenComponents.propTypes = {
+  visible: PropTypes.bool,
+  children: PropTypes.node,
+};
