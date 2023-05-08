@@ -90,9 +90,9 @@ export default function RobotHome(props) {
 
   const dbQuery = useQuery({
     queryKey: ['robots-db'],
-    // queryFn: initialRobotLoad,
     queryFn: getAllRobots,
     retry: 1,
+    retryDelay: 100,
     refetchOnWindowFocus: false,
   });
   const { data: dbData, isError: dbIsError, error: dbErr } = dbQuery;
@@ -114,22 +114,13 @@ export default function RobotHome(props) {
     mutationFn: (preMutation) => {
       console.count(`fetchMutation invoked`);
       const mutatedRobots = preMutation.map((robot) => {
-        // debug(`premutation robot:`, robot);
         const { id } = robot;
         robot.robotId = Number(id);
         robot.userRole = 'public';
         robot.createdBy = 'seed';
         delete robot.id;
-        if (logToggle) {
-          console.table(
-            `RobotHome: fetchRobotMutation:`,
-            robot.robotId,
-            typeof id,
-            Number(id),
-            Number(robot.robotId)
-          );
-        }
-        if (robot.robotId) addRobotToDb(robot);
+
+        if (!dbIsError && robot.robotId) addRobotToDb(robot);
         return robot;
       });
       return mutatedRobots;
@@ -144,9 +135,8 @@ export default function RobotHome(props) {
     if (!isLoading) {
       if (!dbIsError && dbData) {
         const { data } = dbData;
-
         const myRobots = partitionRobots(data);
-        // const { myRobots } = partitionedRobots;
+
         if (myRobots?.length > 0) {
           setActiveTab('tab-my-robots');
           setOwnedRobots([...myRobots]);
@@ -154,19 +144,19 @@ export default function RobotHome(props) {
           setActiveTab('tab-all-robots');
         }
         setAllRobots([...data]);
-        // setAllRobots([...allRobots]);
       } else if (!fetchIsError && fetchData) {
         try {
           console.group(`fetch`);
-          // debug(
-          //   `fetching: fetchIsError:`,
-          //   fetchIsError,
-          //   'fetchData',
-          //   fetchData
-          // );
+          debug(
+            `fetching: fetchIsError:`,
+            fetchIsError,
+            'fetchData',
+            fetchData
+          );
           console.groupEnd();
           fetchRobotMutation.mutate(fetchData);
           setAllRobots([...fetchData]);
+          setActiveTab('tab-all-robots');
         } catch (err) {
           debug(err);
         }
@@ -184,7 +174,7 @@ export default function RobotHome(props) {
   ]);
 
   async function getRobotsFromFetchQuery() {
-    return fetch('https://dummyjson.com/users?limit=1')
+    return fetch('https://dummyjson.com/users?limit=100')
       .then((response) => response.json())
       .then((data) => data.users);
   }
@@ -235,10 +225,10 @@ export default function RobotHome(props) {
   };
 
   const currentCount = activeTab === 'tab-all-robots' ? count : ownCount;
-
   console.groupEnd();
 
-  if (allRobots.length === 0 || isLoading) {
+  if (allRobots.length === 0) {
+    // if (allRobots.length === 0 || isLoading) {
     if (logToggle) {
       console.table('---Loading---', {
         dbData,

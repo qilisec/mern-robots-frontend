@@ -2,12 +2,6 @@
 import PropTypes from 'prop-types';
 import useFormStore from '../../stores/robotFormStore';
 
-const { log } = console;
-const logToggle = 1;
-const debug = (message) => {
-  if (logToggle) log(message);
-};
-
 const createInputTitle = (fieldId) =>
   fieldId
     .replace(/^.*\.([^.]+)$/g, '$1')
@@ -17,29 +11,30 @@ const createInputTitle = (fieldId) =>
 
 export const GeneratePageNInputs = (props) => {
   const page = useFormStore((state) => state.page);
-  const { form: formName, formStyle: style, register } = props;
+  const { form: formName, formStyle: style, register, errors } = props;
   const [readFormToc, readFormCategory] = useFormStore((state) => [
     state.readFormToc,
     state.readFormCategory,
   ]);
   const formDefaultFill = useFormStore((state) => state.formDefaultFill);
+  const readFormValidation = useFormStore((state) => state.readFormValidation);
 
   // pageName equivalent to formCategory in store
   const pageName = readFormToc(formName, page);
   const formFields = readFormCategory(formName, pageName);
 
-  console.group(`GeneratePageNInputs`);
-  console.table(`GeneratePageNInputs:`, {
-    page,
-    pageName,
-    formName,
-    style,
-    formFields,
-  });
+  // console.group(`GeneratePageNInputs`);
+  // console.table(`GeneratePageNInputs:`, {
+  //   page,
+  //   pageName,
+  //   formName,
+  //   style,
+  //   formFields,
+  //   errors,
+  // });
 
   // formFieldKeys = "firstName", "last name", etc
   const formFieldKeys = Object.keys(formFields);
-  // console.log(`generate component Invoked: formDefaultFill`, formDefaultFill);
 
   const formInputs = [];
 
@@ -47,7 +42,8 @@ export const GeneratePageNInputs = (props) => {
     // fieldId = "robotFormBasic.firstName"
     const id = `${pageName}.${fieldKey}`;
     const value = formDefaultFill ? formFields[fieldKey] : '';
-
+    const validator = readFormValidation(formName, pageName, fieldKey);
+    const msg = errors?.[pageName]?.[fieldKey];
     if (typeof value !== 'object') {
       return formInputs.push(
         <FormField
@@ -56,13 +52,21 @@ export const GeneratePageNInputs = (props) => {
           value={value}
           style={style}
           register={register}
+          validator={validator}
+          msg={msg}
         />
       );
     }
-    // console.log(`value is object: fieldKey:`, fieldKey);
     return Object.keys(value).map((subfieldKey) => {
       const subId = `${id}.${subfieldKey}`;
       const subValue = value[subfieldKey] ?? '';
+      const submsg = errors?.[pageName]?.[fieldKey]?.[subfieldKey];
+      const subvalidator = readFormValidation(
+        formName,
+        pageName,
+        fieldKey,
+        subfieldKey
+      );
       return formInputs.push(
         <FormField
           key={subId}
@@ -70,29 +74,32 @@ export const GeneratePageNInputs = (props) => {
           value={subValue}
           style={style}
           register={register}
+          validator={subvalidator}
+          msg={submsg}
         />
       );
     });
   });
 
-  console.groupEnd();
+  // console.groupEnd();
 
   return formInputs;
 };
 
-export const FormField = (props) => {
-  const { id, value, style, register } = props;
-
-  // console.table(`StepN: generateInputs`, {
-  //   fieldId: id,
-  //   fieldValue: value,
-  // });
-
+const FormField = (props) => {
+  const { id, value, style, register, validator, msg } = props;
   return (
-    <label className={`${style}`}>
-      {createInputTitle(`${id}:`)}
-      <input className={style} {...register(id)} defaultValue={value} />
-    </label>
+    <>
+      <label className={`${style}`}>
+        {createInputTitle(`${id}:`)}
+        <input
+          className={style}
+          {...register(id, { ...validator })}
+          defaultValue={value}
+        />
+      </label>
+      <p className="text-white text-left text-xs italic">{msg?.message}</p>
+    </>
   );
 };
 
@@ -110,4 +117,6 @@ FormField.propTypes = {
   id: PropTypes.string,
   value: PropTypes.string,
   register: PropTypes.func,
+  validator: PropTypes.object,
+  message: PropTypes.string,
 };

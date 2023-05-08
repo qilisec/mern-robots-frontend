@@ -1,7 +1,18 @@
-import { useState } from 'react';
+import { current } from 'immer';
+import { useState, useDebugValue } from 'react';
 
 export const useCurrentUser = (initialInput) => {
   const [currentUser, setCurrentUser] = useState(initialInput);
+  const { accessToken, username, userId, isLoading, status } = currentUser;
+  const debugObject = [
+    { accessToken },
+    { username },
+    { userId },
+    { isLoading },
+    { status },
+  ];
+  // console.log(`auth debug object:`, debugObject);
+  useDebugValue(debugObject);
 
   return [
     currentUser,

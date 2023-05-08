@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { useParams } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import { getRobotById } from '../api';
 
 function useIsMounted(props) {
   const isMounted = useRef(false);
@@ -15,57 +17,62 @@ function useIsMounted(props) {
 
 export default function RobotInfo(props) {
   const { allRobots } = props;
-  console.log(`RobotInfo: robots:`, allRobots);
+  // console.log(`RobotInfo: robots:`, allRobots);
   const { id } = useParams();
-  const [currentRobot, setCurrentRobot] = useState([]);
+  const [currentRobot, setCurrentRobot] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const isMounted = useIsMounted();
-  console.log(`robotInfo component invoked`);
-  // console.log(`robots is ${robots}`);
+
+  const handleInfoFetch = () => {
+    console.log(`Robot info query invoked`);
+    return getRobotById(id);
+  };
+
+  const infoQuery = useQuery({
+    queryKey: ['robot-info'],
+    // ISSUE: Receiving errors: TypeError: _this2.options.queryFn is not a function
+    // I though it was because of nullish coalescing on getRobotById fn output. I hoped that removing "?? null" would fix the issue. It did not.
+    // I then thought the issue was because of the format of the conditional in the "enabled" property. I changed it to !allRobots.length. It was not due to that
+    // SOLUTION: I wrapped the underlying API call in another function call, which worked. The only reason I can think of that explains this is that it prevents fetch attempts before the id prop has been retrieved from useParams.
+    queryFn: handleInfoFetch,
+    // queryFn: getRobotById(id),
+    retries: 0,
+    enabled: allRobots.length === 0,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data } = infoQuery;
 
   useEffect(() => {
     const getRobotInfo = async () => {
-      const matchingRobot = await allRobots.find(
-        (robot) => Number(robot.robotId) === Number(id)
-      );
+      console.log(`RobotInfo useEffect invoked:`, allRobots);
+      const matchingRobot =
+        data ||
+        (await allRobots.find((robot) => Number(robot.robotId) === Number(id)));
       try {
         console.log(`matchingRobot is ${matchingRobot.robotId}`);
         setCurrentRobot(matchingRobot);
         setIsLoading(false);
-        return matchingRobot;
       } catch (err) {
         console.log(`error in getRobotInfo: ${err}`);
         return err;
       }
     };
-    getRobotInfo();
-  }, [allRobots.length > 0]);
-  // useEffect(() => {
-  //   const getRobotInfo = async () => {
-  //     const matchingRobot = await robots.find(
-  //       (robot) => Number(robot.robotId) === Number(id)
-  //     );
-  //     try {
-  //       console.log(`matchingRobot is ${matchingRobot.robotId}`);
-  //       setCurrentRobot(matchingRobot);
-  //       setIsLoading(false);
-  //       return matchingRobot;
-  //     } catch (err) {
-  //       console.log(`error in getRobotInfo: ${err}`);
-  //       return err;
-  //     }
-  //   };
-  //   getRobotInfo();
-  // }, [robots.length > 0]);
+    if (isLoading) getRobotInfo();
+
+    // NOTE: Attempting to use cleanup function to set "isLoading" to false crashes the app. I don't know why.
+    // return setIsLoading(false);
+  }, [data, allRobots, id, isLoading]);
 
   const render = () => {
     if (isLoading) {
-      return <h1>Loading currentRobotInfo</h1>;
+      return (
+        <h1 className="text-center text-white">Loading currentRobotInfo</h1>
+      );
     }
     console.log(
       `isLoading is ${isLoading}, currentRobot.robotId is ${currentRobot.robotID}`
     );
-    if (currentRobot) {
+    if (!isLoading && currentRobot) {
       const { address, city, postalCode, state } = currentRobot.address;
       console.log(`currentRobot is ${currentRobot.robotID}`);
       const robotInfo = (
@@ -92,6 +99,14 @@ export default function RobotInfo(props) {
               {city}, {postalCode} {state}
             </li>
           </ul>
+          <div className="mt-4">
+            <button
+              type="button"
+              className="text-white bg bg-pink-300 px-4 py-2"
+            >
+              Delete Robot
+            </button>
+          </div>
         </div>
       );
       return robotInfo;

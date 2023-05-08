@@ -31,16 +31,19 @@ export const createRobot = (payload) => {
   }
 };
 
-export const getRobotById = (id) => {
-  if (id) {
-    console.log(`getRobotById: Don't avoid, robotId is ${id}`);
-    return api.get(`/robot/${id}`, {
+export const getRobotById = async (id) => {
+  console.log(`getRobotById: Don't avoid, robotId is ${id}`);
+  const res = await api.get(
+    `/robot/${id}`,
+    {},
+    {
       secure: true,
       headers: { 'current-function': 'getRobotById' },
-    });
-  }
-  console.log(`avoid getRobotById; robotId is undefined`);
-  return false;
+    }
+  );
+  const { foundRobot } = res.data ?? null;
+  console.log(`getRobotById: foundRobot`, res.data);
+  return foundRobot;
 };
 
 export const updateRobotById = (id, payload) =>

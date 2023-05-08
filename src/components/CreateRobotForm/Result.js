@@ -1,37 +1,20 @@
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-// import { useStateMachine } from 'little-state-machine';
-// import produce from 'immer';
-// import updateAction from '../../updateAction';
 import useFormStore from '../../stores/robotFormStore';
 
 const Result = (props) => {
-  /*
-  Little-state-machine implementation
-    // const { actions, state } = useStateMachine({ updateAction });
-    // const getState = useFormStore((state) => state);
-    // const page = useFormStore((state) => state.page);
-    // console.log(`result`, state);
-    // const prevPage = (data) => {
-    //   data.page = state.page - 1;
-    //   actions.updateAction(data);
-    // };
-    // const nextPage = (data) => {
-    //   data.page = state.page + 1;
-    //   actions.updateAction(data);
-    // };
-  */
-
-  const { handleSubmit } = useForm();
+  // const { handleSubmit } = useForm();
+  const navigate = useNavigate();
   console.groupCollapsed(`Result`);
-  const { form: formName, formNavigation } = props;
-  const { prevPage } = formNavigation;
+  const { form: formName } = props;
 
   const readFormCategory = useFormStore((state) => state.readFormCategory);
+  const resetFormProgress = useFormStore((state) => state.resetFormProgress);
+
   const formToc = useFormStore(
     (state) => state.forms[formName][`${formName}Toc`]
   );
-  console.log(`formToc: ${formToc}`);
 
   const output = formToc.map((category) => {
     const categoryBlock = readFormCategory(formName, category);
@@ -39,7 +22,12 @@ const Result = (props) => {
     return categoryBlock;
   });
 
+  const returnHome = () => {
+    resetFormProgress(formName);
+    navigate('/');
+  };
   console.groupEnd();
+
   return (
     <div className="mb-2 create-robot-form">
       <h2 className="create-robot-form">Result:</h2>
@@ -52,9 +40,9 @@ const Result = (props) => {
         <button
           type="button"
           className="text-slate-800 bg-pink-300 w-full py-2 px-5 text-base tracking-wide uppercase border-none rounded appearance-none"
-          onClick={handleSubmit(prevPage)}
+          onClick={returnHome}
         >
-          Back
+          Return Home
         </button>
       </div>
     </div>
