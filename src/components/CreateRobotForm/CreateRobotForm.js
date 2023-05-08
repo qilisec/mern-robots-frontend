@@ -1,60 +1,27 @@
-import { useEffect } from 'react';
-// import { useStateMachine } from 'little-state-machine';
-// import updateAction from '../../updateAction';
+import { useState, useEffect, useMemo } from 'react';
 import StepN from './StepN';
 import useFormStore from '../../stores/robotFormStore';
 import Result from './Result';
 
 function Form() {
-  /*
-  Little-State-Machine Implementation
-  // const { actions, state } = useStateMachine({ updateAction });
-  // const { page } = state;
-
-  // const prevPage = (data) => {
-  //   data.page = page - 1;
-  //   actions.updateAction(data);
-  // };
-  
-  // const nextPage = (data) => {
-  //   data.page = page + 1;
-  //   actions.updateAction(data);
-  // };
-
-  // const onSubmit = (data) => {
-  //   console.log(`onSubmit:`, data);
-  //   data.page = 5;
-  //   actions.updateAction(data);
-  // };
-  */
+  const [combinedIsValid, setCombinedIsValid] = useState(Array(5).fill(true));
+  const [combinedErrorMessage, setCombinedErrorMessage] = useState('');
 
   const getState = useFormStore((state) => state);
   const page = useFormStore((state) => state.page);
-  const [launchedForm, toggleFormStatus] = useFormStore((state) => [
+  const [launchedForm, setFormStatus] = useFormStore((state) => [
     state.launchedForm,
-    state.toggleFormStatus,
+    state.setFormStatus,
   ]);
 
   // Bug: +Log, -Return state... = onValid is not a function
-  const prevPage = useFormStore(
-    (state) =>
-      // console.log(`prevPage invoked: ${state.page}:`);
-      state.prevPage
-  );
-  const nextPage = useFormStore(
-    (state) =>
-      // console.log(`nextPage invoked: ${state.page}`);
-      state.nextPage
-  );
+  const prevPage = useFormStore((state) => state.prevPage);
+  const nextPage = useFormStore((state) => state.nextPage);
   const onSubmit = useFormStore((state) => state.onSubmit);
 
   const form = 'robotForm';
   const formStyle = 'create-robot-form';
-  const formToc = useFormStore(
-    (state) => state.forms[form][`${form}Toc`]
-    // (state) => state.formDefaults[form][`${form}Toc`]
-  );
-  // const formToc = useFormStore((state) => state[`${form}Toc`]);
+  const formToc = useFormStore((state) => state.forms[form][`${form}Toc`]);
 
   console.group(
     `createRobotForm Page ${page + 1}: ${Date.now().toString().slice(-5)}`,
@@ -62,28 +29,35 @@ function Form() {
   );
 
   useEffect(() => {
-    if (!launchedForm && page !== 0) {
+    if (launchedForm !== form) {
       console.log(`CreateRobotForm accessed from navbar`);
-      toggleFormStatus(true);
+      setFormStatus(form);
+      setCombinedIsValid(Array(5).fill(true));
     }
-  }, []);
+  }, [launchedForm]);
 
   const formNavigation = { prevPage, nextPage, onSubmit };
 
+  const formState = useMemo(
+    () => ({
+      combinedErrorMessage,
+      combinedIsValid,
+      setCombinedErrorMessage,
+      setCombinedIsValid,
+    }),
+    [combinedErrorMessage, combinedIsValid]
+  );
   console.groupEnd();
 
   const robotFormPage =
     page === formToc.length ? (
-      <Result
-        form={form}
-        formStyle={formStyle}
-        formNavigation={formNavigation}
-      />
+      <Result form={form} formStyle={formStyle} />
     ) : (
       <StepN
         form={form}
         formStyle={formStyle}
         formNavigation={formNavigation}
+        formState={formState}
       />
     );
 

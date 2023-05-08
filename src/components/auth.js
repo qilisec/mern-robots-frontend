@@ -21,6 +21,7 @@ import {
 
 import { changePrivateApiInterceptors } from '../api/interceptors';
 import { useCurrentUser, useCurrentUserDefaults } from './useCurrentUser';
+import { useDebugInfo } from './useDebugInfo';
 
 const { log } = console;
 const logToggle = 1;
@@ -135,15 +136,17 @@ export const AuthProvider = ({ children }) => {
     return decodeToken(inputJwt);
   };
 
-  const reloadAuthentication = async () => {
+  const reloadAuthentication = useCallback(async () => {
     try {
       console.group(`Auth: Initial Reload`);
       console.count(`Auth: Initial Reload Invoked`);
       const refreshToken = await requestRefreshToken();
-      debug(`AUTH RELOAD 1️⃣: Recovered RT`);
+      console.log(`Auth: refresh RT: time:`, Date.now());
+      // debug(`AUTH RELOAD 1️⃣: Recovered RT`);
 
       const accessToken = refreshToken ? await requestAccessToken() : null;
-      debug(`AUTH RELOAD 2️⃣: NEW AT: ${accessToken?.slice(-8)}`);
+      console.log(`Auth: refresh AT: time:`, Date.now());
+      // debug(`AUTH RELOAD 2️⃣: NEW AT: ${accessToken?.slice(-8)}`);
 
       const { username, userId } = await decodeJwt(accessToken);
 
@@ -164,17 +167,14 @@ export const AuthProvider = ({ children }) => {
         isLoading: false,
       });
     }
-  };
+  }, []);
+
   const memoizedAuthProps = useMemo(
     () => ({
       currentUser,
-      username,
-      userId,
-      accessToken,
-      isLoading,
-      status,
     }),
-    [currentUser, username, userId, accessToken, isLoading, status]
+    [currentUser]
+    // [currentUser, username, userId, accessToken, isLoading, status]
   );
 
   // ////////////////////////////////////////
@@ -184,10 +184,10 @@ export const AuthProvider = ({ children }) => {
   // Use Effect for auth recovery on page refresh
   useEffect(() => {
     // NOTE: Even with the return cleanup function setting isLoading to false: I need to set if statement on reloadAuthentication to prevent refiring, possibly due to the rate at which reload authentication was invoked.
+    console.count(`auth useEffect fired`);
     if (isLoading) reloadAuthentication();
-
     return setCurrentUser({ isLoading: false });
-  }, [accessToken]);
+  }, [accessToken, isLoading, reloadAuthentication]);
   // }, [isLoading === true]);
 
   // console.groupEnd();
@@ -202,10 +202,16 @@ export const AuthProvider = ({ children }) => {
         refreshAccessToken,
       }}
     >
+      <DebugMonitor currentUser={currentUser} />
       {children}
     </AuthContext.Provider>
   );
 };
+
+const DebugMonitor = (props) => {
+  const info = useDebugInfo(`DebugMonitor`, props);
+};
+
 AuthProvider.propTypes = {
   children: PropTypes.node,
 };

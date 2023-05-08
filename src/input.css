@@ -30,7 +30,7 @@ label.create-robot-form {
 }
 
 input.create-robot-form {
-  @apply text-black box-border w-full border rounded border-white px-3.5 py-2.5 mb-1 text-lg;
+  @apply text-black box-border w-full border rounded border-white px-3.5 pt-2.5 pb-1 mb-1 text-lg;
 }
 
 input[type="submit"].create-robot-form {

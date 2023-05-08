@@ -12,8 +12,8 @@ import useFormStore from '../stores/robotFormStore';
 export default function NavBar() {
   const auth = useAuth();
   const { accessToken, username, userId } = auth.currentUser;
-
-  const toggleFormStatus = useFormStore((state) => state.toggleFormStatus);
+  const currentForm = useFormStore((state) => state.launchedForm);
+  const setFormStatus = useFormStore((state) => state.setFormStatus);
   const resetFormProgress = useFormStore((state) => state.resetFormProgress);
   // Below: Wrong, use set to change state
   // const resetForm = useFormStore((state) => (state.page = 1));
@@ -21,13 +21,16 @@ export default function NavBar() {
   const loginStatus = auth && accessToken ? accessToken : null;
 
   const handleGoHome = () => {
-    console.log(`invoked HandleGoHome; wiping history`);
-    resetFormProgress();
-    toggleFormStatus(false);
+    console.log(
+      `invoked HandleGoHome; wiping history: currentForm:`,
+      currentForm
+    );
+    resetFormProgress(currentForm);
+    setFormStatus(false);
   };
 
   const handleGoCreateRobotForm = () => {
-    // toggleFormStatus(true);
+    // setFormStatus(true);
   };
 
   return (
