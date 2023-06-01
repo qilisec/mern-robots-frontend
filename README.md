@@ -1,70 +1,36 @@
-# Getting Started with Create React App
+# MERN Robots App
+## Overview
+This application is a full stack implementation of CRUD functionality hosted remotely on Amazon Web Services.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+* Communication between frontend and backend follows REST API guidelines.
 
-## Available Scripts
+* It uses React (Create React App) for the Client, Express.JS for a simple lightweight server and MongoDB for a non-relational Database. Client communication with server is managed using Axios.
 
-In the project directory, you can run:
+* The primary data generated takes the facade of "robots" in which user information is stored (e.g. name, address, birthday, place of work, etc.)
 
-### `npm start`
+* User authentication and JWT-based authorization are also implemented to allow for protected routing and client-side user-specific component rendering such as user specific profile pages and filtered robot submissions
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+## Further Details
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Security/Authentication:
+Client-Side authentication state data is distributed using React Context.
+Both client and server communication are secured with SSL (self-signed).
+	
+### Authorizaton:
+* User login state and authorization is persisted via an Access Token - Refresh Token JWT strategy.
 
-### `npm run build`
+* Access tokens (Quick expiration) are stored in request headers whereas refresh tokens (Long expiration) are stored in HTTP-only cookies. 
+	
+* Axios request and response interceptors are used to send authorization tokens for initial verification authorization as well as reissuing access tokens upon expiration. 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Routing:
+* Routing is facilitated with React-Router-DOM client side and Express routers server-side
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Miscellaneous/Developement Dependencies:
+* Nodemon is utilized on the server side.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* ESlint + Prettier setup: https://www.npmjs.com/package/eslint-config-wesbos (An extension of the popular AirBNB style guide)
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+* Client and Server/Database are separated onto two AWS EC2 instances.
