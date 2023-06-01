@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { getRobotById } from '../api';
+import { deleteRobot } from '../api/privateApi';
 
 function useIsMounted(props) {
   const isMounted = useRef(false);
@@ -17,6 +18,7 @@ function useIsMounted(props) {
 
 export default function RobotInfo(props) {
   const { allRobots } = props;
+  const navigate = useNavigate();
   // console.log(`RobotInfo: robots:`, allRobots);
   const { id } = useParams();
   const [currentRobot, setCurrentRobot] = useState(null);
@@ -41,6 +43,12 @@ export default function RobotInfo(props) {
   });
 
   const { data } = infoQuery;
+
+  const sendRobotDelete = async () => {
+    console.log(`sendRobotDelete: id:`, id);
+    await deleteRobot(id);
+    navigate('/');
+  };
 
   useEffect(() => {
     const getRobotInfo = async () => {
@@ -103,6 +111,7 @@ export default function RobotInfo(props) {
             <button
               type="button"
               className="text-white bg bg-pink-300 px-4 py-2"
+              onClick={sendRobotDelete}
             >
               Delete Robot
             </button>
