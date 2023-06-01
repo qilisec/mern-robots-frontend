@@ -7,14 +7,16 @@ import { createRobot as createRobotPrivate } from '../api/createRobot';
 export const CreateRobot = () => {
   const navigate = useNavigate();
   const auth = useAuth();
-
+  const { accessToken, username } = auth.currentUser;
   const [robotInput, setRobotInput] = useCreateRobot(initialRobotForm);
 
   const handleCreateRobot = async () => {
-    if (auth.currentAuthUsername) {
+    if (username) {
+      // if (auth.currentAuthUsername) {
       const robotRequest = {
         ...robotInput,
-        createdBy: auth.currentAuthUsername,
+        createdBy: username,
+        // createdBy: auth.currentAuthUsername,
       };
       const createdRobot = await createRobotPrivate(robotRequest);
       console.log(`handleCreateRobotPrivate`, createdRobot);

@@ -1,6 +1,11 @@
 import axios from 'axios';
 
 const { log } = console;
+const logToggle = 1;
+const debug = (message) => {
+  if (logToggle) log(message);
+};
+
 export const ip =
   process.env.REACT_APP_HOST === 'local'
     ? 'localhost'
@@ -24,7 +29,7 @@ export const logoutBackend = async (requestingUserId) => {
   });
   // The property is .status, not .statusCode
   if (submit.status === 200) return true;
-  console.log(`pAPI logout 2️⃣: submit.statusCode: ${submit.status}`);
+  debug(`pAPI logout 2️⃣: submit.statusCode: ${submit.status}`);
   return false;
 };
 
@@ -41,22 +46,8 @@ export const getRefreshToken = async () => {
   return rtkn;
 };
 
-// export const getNewAccessToken = async (refreshTokenData) => {
-//   log(`getNewAccessToken invoked`);
-//   if (refreshTokenData) {
-//     const payload = { refreshToken: refreshTokenData };
-//     const check = await privateApi.put(`/authentication/refresh`, payload, {
-//       withCredentials: true,
-//       secure: true,
-//       headers: { 'current-function': 'refreshAccessToken' },
-//     });
-//     const { newAccessToken } = check.data;
-//     log(`getNewAccessToken finished; accessToken`, newAccessToken);
-//     return newAccessToken;
-//   }
-// };
 export const getNewAccessToken = async () => {
-  log(`getNewAccessToken invoked`);
+  debug(`getNewAccessToken invoked`);
   try {
     // const payload = { refreshToken: refreshTokenData };
     const check = await privateApi.put(`/authentication/refresh`, '', {
@@ -65,14 +56,18 @@ export const getNewAccessToken = async () => {
       headers: { 'current-function': 'refreshAccessToken' },
     });
     const { newAccessToken } = check.data;
+    debug(
+      `getNewAccessToken finished: newAccessToken: `,
+      newAccessToken?.slice(-8)
+    );
     return newAccessToken;
   } catch (err) {
-    log(`getNewAccessToken err`, err);
+    debug(`getNewAccessToken err`, err);
   }
 };
 
 export const getProfilePage = async (queryUserId) => {
-  console.log(` 🛡🛡🛡 pAPI getProfile invoked: ${queryUserId}`);
+  debug(` 🛡🛡🛡 pAPI getProfile invoked: ${queryUserId}`);
   const payload = { userId: queryUserId };
   // Do I actually need to stringify this? I don't think so.
   // const payload = JSON.stringify({ userId: queryUserId });
@@ -92,8 +87,24 @@ export const getProfilePage = async (queryUserId) => {
 
     return supplementalUserInfo;
   } catch (err) {
-    console.log(`pAPI ❌ Get Profile Error: ${err} `);
+    debug(`pAPI ❌ Get Profile Error: ${err} `);
     return err;
+  }
+};
+
+export const createRobot = async (formInfo, user) => {
+  try {
+    const payload = { ...formInfo, createdBy: user };
+    const newRobot = await privateApi.post(`/robot`, payload, {
+      secure: true,
+      headers: {
+        'current-function': 'createRobot',
+      },
+    });
+    console.log(`createRobot API: newRobot:`, newRobot);
+    return newRobot;
+  } catch (err) {
+    console.log(`createRobot API error:`, err);
   }
 };
 
@@ -103,4 +114,5 @@ export default {
   getNewAccessToken,
   logoutBackend,
   getProfilePage,
+  createRobot,
 };

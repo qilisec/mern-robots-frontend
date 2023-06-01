@@ -1,36 +1,48 @@
 import { useForm } from 'react-hook-form';
-import { useStateMachine } from 'little-state-machine';
-import updateAction from '../../updateAction';
+import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import useFormStore from '../../stores/robotFormStore';
 
 const Result = (props) => {
-  const { actions, state } = useStateMachine({ updateAction });
-  const { handleSubmit } = useForm();
-  console.log(`result`, state);
+  // const { handleSubmit } = useForm();
+  const navigate = useNavigate();
+  console.groupCollapsed(`Result`);
+  const { form: formName } = props;
 
-  const prevPage = (data) => {
-    data.page = state.page - 1;
-    actions.updateAction(data);
+  const readFormCategory = useFormStore((state) => state.readFormCategory);
+  const resetFormProgress = useFormStore((state) => state.resetFormProgress);
+
+  const formToc = useFormStore(
+    (state) => state.forms[formName][`${formName}Toc`]
+  );
+
+  const output = formToc.map((category) => {
+    const categoryBlock = readFormCategory(formName, category);
+    console.table('Result: output:', category, categoryBlock);
+    return categoryBlock;
+  });
+
+  const returnHome = () => {
+    resetFormProgress(formName);
+    navigate('/');
   };
-  const nextPage = (data) => {
-    data.page = state.page + 1;
-    actions.updateAction(data);
-  };
+  console.groupEnd();
 
   return (
     <div className="mb-2 create-robot-form">
       <h2 className="create-robot-form">Result:</h2>
       <pre className="text-primary">
-        {JSON.stringify(state, null, 2)
+        {JSON.stringify(output, null, 2)
           .slice(1, -1)
           .replace(/[{}"],?/g, '')}
       </pre>
       <div>
         <button
           type="button"
-          className="text-slate-800 bg-pink-300 inline-block w-full py-2 px-5 text-base tracking-wide uppercase border-none rounded appearance-none"
-          onClick={handleSubmit(prevPage)}
+          className="text-slate-800 bg-pink-300 w-full py-2 px-5 text-base tracking-wide uppercase border-none rounded appearance-none"
+          onClick={returnHome}
         >
-          Back
+          Return Home
         </button>
       </div>
     </div>
@@ -38,3 +50,9 @@ const Result = (props) => {
 };
 
 export default Result;
+
+Result.propTypes = {
+  form: PropTypes.string,
+  formNavigation: PropTypes.object,
+  prevPage: PropTypes.func,
+};

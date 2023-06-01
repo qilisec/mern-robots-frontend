@@ -1,116 +1,158 @@
 /* eslint-disable no-useless-escape */
+import { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
-import { useStateMachine } from 'little-state-machine';
-import ComponentWithRouterProp from '../ComponentWithRouterProp';
-import updateAction from '../../updateAction';
+import { useForm, useFormState } from 'react-hook-form';
+import useFormStore from '../../stores/robotFormStore';
+import { createRobot } from '../../api/privateApi';
+import { useAuth } from '../auth';
+import { GeneratePageNInputs } from './GeneratePageNInputs';
 
-const GeneratePageNInputs = (page, formType, formStyle) => {
-  const { register } = useForm();
-  const { state } = useStateMachine({ updateAction });
-
-  const formFields = `${formType}${state[`${formType}Toc`][page]}`;
-  const formFieldKeys = Object.keys(state[formFields]);
-
-  const subFormPageInputElements = formFieldKeys.map((fieldKey) => {
-    const fieldId = `${formFields}.${fieldKey}`;
-    const fieldDefault = state[formFields][fieldKey];
-
-    const fieldInputElement =
-      typeof fieldDefault === 'object' ? (
-        Object.keys(state[formFields][fieldKey]).map((subFieldKey) => {
-          const subfieldId = `${fieldId}.${subFieldKey}`;
-          const subfieldDefault = fieldDefault[subFieldKey];
-
-          const subOutput = (
-            <label
-              key={`${formFields}.${fieldKey}.${subFieldKey}`}
-              className={`${formStyle}`}
-            >
-              {createInputLabel(`${fieldKey} ${subFieldKey}:`)}
-              <input
-                key={`${formFields}.${fieldKey}.${subFieldKey}`}
-                className={`${formStyle}`}
-                {...register(subfieldId)}
-                defaultValue={subfieldDefault}
-              />
-            </label>
-          );
-          return subOutput;
-        })
-      ) : (
-        <label key={fieldId} className={`${formStyle}`}>
-          {createInputLabel(`${fieldKey}:`)}
-          <input
-            key={fieldId}
-            className={`${formStyle}`}
-            {...register(fieldId)}
-            defaultValue={fieldDefault}
-          />
-        </label>
-      );
-    return fieldInputElement;
-  });
-
-  return subFormPageInputElements;
+const { log } = console;
+const logToggle = 1;
+const debug = (message) => {
+  if (logToggle) log(message);
 };
 
-const createInputLabel = (inputField) =>
-  inputField
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^(.)(.*)$/, (match, g1, g2) => g1.toUpperCase() + g2);
-
-const StepN = ({ props }) => {
-  const { actions, state } = useStateMachine({ updateAction });
-  const { page } = state;
-  const { form, formStyle, formNavigation } = props;
+function StepN(props) {
+  const { form, formStyle, formNavigation, formState } = props;
   const { prevPage, nextPage, onSubmit } = formNavigation;
-  const { handleSubmit } = useForm();
+  const {
+    combinedErrorMessage,
+    combinedIsValid,
+    setCombinedErrorMessage,
+    setCombinedIsValid,
+  } = formState;
+  const auth = useAuth();
+  const { username } = auth.currentUser;
 
-  console.log(`Step N=${page} invoked (Page ${page + 1})`, state);
+  const { register, getValues, handleSubmit, reset, control } = useForm({
+    mode: 'onChange',
+  });
+  const { errors, isValid } = useFormState({ control });
 
-  const CurrentFormInputs = GeneratePageNInputs(page, form, formStyle);
+  const page = useFormStore((state) => state.page);
+  const jumpPages = useFormStore((state) => state.jumpPages);
+  const formDefaultFill = useFormStore((state) => state.formDefaultFill);
+  const toggleFormDefaultFill = useFormStore(
+    (state) => state.toggleFormDefaultFill
+  );
+
+  // NOTE: You can't use handleSubmit for obtaining input values to refresh the state with (e.g. onClick=handleSubmit(nextPage)) because handle submit is only intended to be used with the submit input. Instead, use getValues().
+  console.log(
+    `StepN Page ${page}: current isValid? ${isValid}; combinedIsValid:`,
+    combinedIsValid
+  );
+  const updateErrors = useCallback(() => {
+    const departingPageErrors = isValid;
+    const prevRecord = combinedIsValid[page];
+    console.log(
+      `updateErrors: page: ${page}; departingPageErrors: ${departingPageErrors}, prevRecord: ${prevRecord}`
+    );
+    if (departingPageErrors !== prevRecord) {
+      const updatedIsValid = combinedIsValid.slice(0);
+      updatedIsValid[page] = isValid;
+      setCombinedIsValid(updatedIsValid);
+    }
+  }, [page, isValid]);
+
+  const handlePrevPage = () => {
+    const data = getValues();
+    updateErrors();
+    prevPage(form, data);
+  };
+
+  const handleNextPage = () => {
+    const data = getValues();
+    updateErrors();
+    nextPage(form, data);
+  };
+
+  const handleToggleFormFill = () => {
+    console.log(`handleToggleForm: form`, form);
+    toggleFormDefaultFill(form);
+    reset();
+  };
+
+  const submitCreateRobot = async (data) => {
+    try {
+      if (combinedIsValid.every((value) => value === true)) {
+        const formInfo = onSubmit(data, form);
+        const newRobot = await createRobot(formInfo, username);
+        setCombinedErrorMessage('');
+        debug(`submitCreateRobot: newRobot:`, newRobot);
+        return newRobot;
+      }
+      console.log(`Form is not valid: ${combinedIsValid}`);
+      const firstError = combinedIsValid.findIndex((value) => value === false);
+      jumpPages(form, data, firstError);
+      setCombinedErrorMessage('Some fields were not filled properly');
+    } catch (err) {
+      debug(`submitCreateRobot error: data`, data, err);
+    }
+  };
+
+  // NOTE: Below: Don't invoke GeneratePageNInputs as a function. Instead, make it a component and pass the register method in order to link up iteratively generated inputs with this parent Form wrapper
+  // const CurrentFormInputs = GeneratePageNInputs(page, form, formStyle);
 
   return (
     <div className={`${formStyle}`}>
       <h1 className={`${formStyle}`}>Create Robot</h1>
-      <form className={`${formStyle}`} onSubmit={handleSubmit(onSubmit)}>
-        <h2 className={`${formStyle}`}>Step {page + 1} of 5</h2>
-        {CurrentFormInputs}
+      <h2 className={`${formStyle} italic`}>{combinedErrorMessage}</h2>
+      <form
+        className={`${formStyle}`}
+        onSubmit={handleSubmit(submitCreateRobot)}
+      >
+        <h2 className={`${formStyle}`}>Step {page + 1} of 5</h2>{' '}
+        <GeneratePageNInputs {...props} register={register} errors={errors} />
         <input className={`${formStyle}`} type="submit" />
-      </form>
-      <div className="text-center">
-        {page > 0 && (
+        <div className="flex flex-row justify-between justify-items-stretch">
           <button
             type="button"
-            className="fixed w-[270px] py-2 px-5 text-base tracking-wide text-slate-800 uppercase  bg-pink-300 border-none rounded appearance-none place-items-end -translate-x-[280px]"
-            onClick={handleSubmit(prevPage)}
+            // eslint-disable-next-line prettier/prettier, prefer-template
+            className={'flex-grow flex-shrink px-4 py-2 w-2/5  bg-pink-300 text-base tracking-wide uppercase border-none rounded appearance-none ' + (page > 0 ? 'text-slate-800' : 'text-white opacity-30')}
+            onClick={page > 0 ? handlePrevPage : () => ({})}
           >
             Back
           </button>
-        )}
-        {page < 5 && (
+
+          <button
+            className={`flex-grow flex-shrink px-2 mx-2 text-slate-800 text-base tracking-wide uppercase border-none rounded appearance-none ${
+              formDefaultFill ? 'bg-pink-600' : 'bg-pink-300'
+            }`}
+            type="button"
+            onClick={handleToggleFormFill}
+          >
+            Auto-Fill?
+          </button>
+
           <button
             type="button"
-            className="fixed w-[270px] px-5 py-2 text-base tracking-wide text-slate-800 uppercase translate-x-2 bg-pink-300 border-none rounded appearance-none place-items-end"
-            onClick={handleSubmit(nextPage)}
+            className={`flex-grow flex-shrink w-2/5 px-4 py-2 bg-pink-300 text-base tracking-wide uppercase border-none rounded appearance-none ${
+              page < 5 ? 'text-slate-800' : 'text-white'
+            }`}
+            onClick={page < 5 ? handleNextPage : () => ({})}
           >
             Next
           </button>
-        )}
-      </div>
+        </div>
+      </form>
     </div>
   );
-};
+}
 
-export default ComponentWithRouterProp(StepN);
+export default StepN;
 
 StepN.propTypes = {
   props: PropTypes.object,
   form: PropTypes.string,
   formStyle: PropTypes.string,
-  formNavigation: PropTypes.func,
+  formNavigation: PropTypes.object,
   prevPage: PropTypes.func,
   nextPage: PropTypes.func,
   onSubmit: PropTypes.func,
+  formState: PropTypes.object,
+  combinedErrorMessage: PropTypes.string,
+  combinedIsValid: PropTypes.array,
+  setCombinedErrorMessage: PropTypes.func,
+  setCombinedIsValid: PropTypes.func,
 };

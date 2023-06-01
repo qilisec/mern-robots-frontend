@@ -1,91 +1,66 @@
-import { useEffect } from 'react';
-import { useStateMachine } from 'little-state-machine';
-import { useAuth } from '../auth';
-import updateAction from '../../updateAction';
-import First from './Step1';
-import Second from './Step2';
-import Result from './Result';
+import { useState, useEffect, useMemo } from 'react';
 import StepN from './StepN';
+import useFormStore from '../../stores/robotFormStore';
+import Result from './Result';
 
 function Form() {
-  const { actions, state } = useStateMachine({ updateAction });
-  const { page } = state;
-  const auth = useAuth();
-  console.log(`CreateRobotForm Page ${page + 1}`);
+  const [combinedIsValid, setCombinedIsValid] = useState(Array(5).fill(true));
+  const [combinedErrorMessage, setCombinedErrorMessage] = useState('');
+
+  const getState = useFormStore((state) => state);
+  const page = useFormStore((state) => state.page);
+  const [launchedForm, setFormStatus] = useFormStore((state) => [
+    state.launchedForm,
+    state.setFormStatus,
+  ]);
+
+  // Bug: +Log, -Return state... = onValid is not a function
+  const prevPage = useFormStore((state) => state.prevPage);
+  const nextPage = useFormStore((state) => state.nextPage);
+  const onSubmit = useFormStore((state) => state.onSubmit);
+
+  const form = 'robotForm';
+  const formStyle = 'create-robot-form';
+  const formToc = useFormStore((state) => state.forms[form][`${form}Toc`]);
+
+  console.group(
+    `createRobotForm Page ${page + 1}: ${Date.now().toString().slice(-5)}`,
+    { state: getState }
+  );
 
   useEffect(() => {
-    if (!state.launchedForm && page !== 0) {
+    if (launchedForm !== form) {
       console.log(`CreateRobotForm accessed from navbar`);
-      actions.updateAction({ page: 0, launchedForm: true });
+      setFormStatus(form);
+      setCombinedIsValid(Array(5).fill(true));
     }
-  }, []);
-
-  const prevPage = (data) => {
-    data.page = page - 1;
-    actions.updateAction(data);
-  };
-  const nextPage = (data) => {
-    data.page = page + 1;
-    actions.updateAction(data);
-  };
-
-  const onSubmit = (data) => {
-    console.log(`onSubmit:`, data);
-    data.page = 5;
-    actions.updateAction(data);
-  };
+  }, [launchedForm]);
 
   const formNavigation = { prevPage, nextPage, onSubmit };
 
-  const conditionalComponent = () => {
-    switch (page) {
-      case 0:
-        return (
-          <StepN
-            form="robotForm"
-            formStyle="create-robot-form"
-            formNavigation={formNavigation}
-          />
-        );
-      case 1:
-        return (
-          <StepN
-            form="robotForm"
-            formStyle="create-robot-form"
-            formNavigation={formNavigation}
-          />
-        );
-      case 2:
-        return (
-          <StepN
-            form="robotForm"
-            formStyle="create-robot-form"
-            formNavigation={formNavigation}
-          />
-        );
-      case 3:
-        return (
-          <StepN
-            form="robotForm"
-            formStyle="create-robot-form"
-            formNavigation={formNavigation}
-          />
-        );
-      case 4:
-        return (
-          <StepN
-            form="robotForm"
-            formStyle="create-robot-form"
-            formNavigation={formNavigation}
-          />
-        );
-      case 5:
-        return <Result formNavigation={formNavigation} />;
-      default:
-        return <StepN />;
-    }
-  };
+  const formState = useMemo(
+    () => ({
+      combinedErrorMessage,
+      combinedIsValid,
+      setCombinedErrorMessage,
+      setCombinedIsValid,
+    }),
+    [combinedErrorMessage, combinedIsValid]
+  );
+  console.groupEnd();
 
-  return <>{conditionalComponent()}</>;
+  const robotFormPage =
+    page === formToc.length ? (
+      <Result form={form} formStyle={formStyle} />
+    ) : (
+      <StepN
+        form={form}
+        formStyle={formStyle}
+        formNavigation={formNavigation}
+        formState={formState}
+      />
+    );
+
+  return robotFormPage;
 }
 export default Form;
