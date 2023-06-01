@@ -108,6 +108,25 @@ export const createRobot = async (formInfo, user) => {
   }
 };
 
+export const deleteRobot = async (id) => {
+  try {
+    const success = await privateApi.delete(
+      `/robot/${id}`,
+      {},
+      {
+        withCredentials: true,
+        secure: true,
+        headers: {
+          'current-function': 'deleteRobot',
+        },
+      }
+    );
+    console.log(`deleteRobot privateAPI: success:`, success);
+    return success;
+  } catch (err) {
+    console.log(`deleteRobot error:`, err);
+  }
+};
 export default {
   privateApi,
   getRefreshToken,
